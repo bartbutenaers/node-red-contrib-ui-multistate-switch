@@ -1,0 +1,126 @@
+<!--
+  Copyright 2021, Bart Butenaers
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  http://www.apache.org/licenses/LICENSE-2.0
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/javascript">
+    RED.nodes.registerType('ui_mult_state_switch',{
+        category: 'dashboard',
+        color: 'rgb( 63, 173, 181)',
+        defaults: {
+            name: {value: ''},
+            group: {type: 'ui_group', required:true},
+            order: {value: 0},
+            width: {
+                value: 3,
+                validate: function(v) {
+                    var valid = true
+                    var width = v||0;
+                    var currentGroup = $('#node-input-group').val()|| this.group;
+                    var groupNode = RED.nodes.node(currentGroup);
+                    valid = !groupNode || +width <= +groupNode.width;
+                    $("#node-input-size").toggleClass("input-error",!valid);
+                    return valid;
+                }},
+            height: {value: 1},
+            name: {value: ''},
+            options: {value: []}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "font-awesome/fa-toggle-off",
+        align: 'left',
+        paletteLabel:"multi-toggle switch",
+        label: function() {
+            return this.name || "multi toggle switch";
+        },
+        oneditprepare: function() {
+            $("#node-input-size").elementSizer({
+                width: "#node-input-width",
+                group: "#node-input-group"
+            });
+           
+            var optionsList = $("#node-input-options-container").css('min-height','250px').css('min-width','450px').editableList({
+                header: $("<div>").append($.parseHTML(
+                   "<div style='width:45%; margin-left:5px; display: inline-grid'><b>Label</b></div>" +
+                   "<div style='width:45%; margin-left:5px; display: inline-grid'><b>Value</b></div>")),
+                addItem: function(container, i, option) {
+                    // Add a new row to the editableList
+                    var row = $('<div/>').appendTo(container);
+                    
+                    // Column 1 : Add an input field (type string) to the new row, that represents the option label
+                    var labelField = $('<input/>',{class:"node-input-option-label",type:"text"}).css({"width":"45%","margin-left":"5px","margin-right":"5px"}).appendTo(row);
+                    labelField.val(option.label || "Option " + i);                   
+
+                    // Column 2 : Add an input field (type string) to the new row, that represents the option value
+                    var valueField = $('<input/>',{class:"node-input-option-value",type:"text"}).css({"width":"45%","margin-left":"5px","margin-right":"5px"}).appendTo(row);
+                    valueField.val(option.value || "option_" + i);
+                },
+                removable: true
+            });
+            
+            // Show all the options (stored in this node) into the editableList
+            if (this.options) {
+                this.options.forEach(function (option, index) {
+                    optionsList.editableList('addItem', {label:option.label, value:option.value});
+                });
+            }
+        },
+        oneditsave: function() {
+            var node = this;
+
+            // Copy all the options from the editableList to this node
+            node.options = [];
+            var optionsList = $("#node-input-options-container").editableList('items');
+            optionsList.each(function(i) {
+                var option = $(this);
+                var label  = option.find(".node-input-option-label").val();
+                var value  = option.find(".node-input-option-value").val();
+
+                node.options.push({label:label, value:value});
+            });
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="ui_mult_state_switch">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row" id="template-row-group">
+        <label for="node-input-group"><i class="fa fa-table"></i> Group</span></label>
+        <input type="text" id="node-input-group">
+    </div>    
+    <div class="form-row" id="template-row-size">
+        <label><i class="fa fa-object-group"></i> Size</span></label>
+        <input type="hidden" id="node-input-width">
+        <input type="hidden" id="node-input-height">
+        <button class="editor-button" id="node-input-size"></button>
+    </div>
+    <br>
+    <div class="form-row" style="margin-bottom:0;">
+        <label><i class="fa fa-list"></i> Options:</label>
+    </div>
+    <div class="form-row">
+        <!-- Table with input options -->
+        <ol id="node-input-options-container"></ol>
+    </div>
+</script>
+<script type="text/x-red" data-help-name="ui_mult_state_switch">
+    <p>A Node Red node to show a switch with multiple states in the Node-RED dashboard.</p>
+    <p><strong>Options:</strong><br/>
+    Specify which options need to be displayed:
+        <ul>
+            <li><i>Label: </i>The description that will be displayed.</li>
+            <li><i>Value: </i>The value that will be send in input and output messages.</li>
+        </ul></p>
+</script>
