@@ -1,5 +1,7 @@
 # node-red-contrib-ui-multistate-switch
-A Node Red node to show a switch with multiple states in the Node-RED dashboard
+A Node Red node to show a switch with multiple states in the Node-RED dashboard.
+
+All credits for the CSS go to [hotnipi](https://github.com/hotNipi) in [this](https://discourse.nodered.org/t/feature-request-off-auto-on-toggle/40837) discussion.
 
 # Example flow
 
