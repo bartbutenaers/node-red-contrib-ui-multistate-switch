@@ -1,0 +1,29 @@
+{
+    "name": "node-red-contrib-ui-multistate-switch",
+    "version": "1.0.0",
+    "description": "A Node Red node to show a switch with multiple states in the Node-RED dashboard",
+    "author": {
+        "name": "Bart Butenaers"
+    },
+    "license": "Apache-2.0",
+    "keywords": [
+        "node-red",
+        "dashboard",
+        "switch",
+        "multi",
+        "state"
+    ],   
+    "bugs": {
+        "url": "https://github.com/bartbutenaers/node-red-contrib-ui-multistate-switch/issues"
+    },
+    "homepage": "https://github.com/bartbutenaers/node-red-contrib-ui-multistate-switch",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/bartbutenaers/node-red-contrib-ui-multistate-switch.git"
+    },
+    "node-red": {
+        "nodes": {
+            "ui_mult_state_switch": "multistate_switch.js"
+        }
+    }
+}
