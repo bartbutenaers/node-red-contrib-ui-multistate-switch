@@ -9,6 +9,17 @@ Run the following npm command in your Node-RED user directory (typically ~/.node
 npm install node-red-contrib-ui-multistate-switch
 ```
 
+## Use cases
+A list of possible use cases for this node:
+
++ Switch a thermostate on/off manually, or put it on automatic (i.e. controlled e.g. by a setpoint profile):
+
+   ![thermostat](https://user-images.githubusercontent.com/14224149/107996107-de209700-6fdf-11eb-9ff4-4974e8cbe9bf.png)
+
++ Switch a light on/off manually, or put it on automatic (i.e; controlled by a PIR sensor):
+
+   ![ligth](https://user-images.githubusercontent.com/14224149/107996070-ca753080-6fdf-11eb-96cd-09907673487d.png)
+
 # Example flow
 
 The following flow shows switch button with 2, 3 and 4 states:
