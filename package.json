@@ -12,7 +12,12 @@
         "switch",
         "multi",
         "state"
-    ],   
+    ],
+    "contributors": [{
+            "name": "hotnipi",
+            "url": "https://github.com/hotNipi"
+        }
+    ],
     "bugs": {
         "url": "https://github.com/bartbutenaers/node-red-contrib-ui-multistate-switch/issues"
     },
