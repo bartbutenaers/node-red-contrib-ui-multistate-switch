@@ -164,21 +164,26 @@ module.exports = function(RED) {
                         });
                         
                         function switchStateChanged(newValue) {
-                            var radioButtonIndex = -1;
+                            var divIndex = -1;
       
                             // Try to find an option with a value identical to the specified value
                             $scope.config.options.forEach(function (option, index) {
-                                if (option.value === newValue) {
-                                    radioButtonIndex = index;
+                                if (option.value == newValue) {
+                                    divIndex = index;
                                 }
                             });
                             
-                            if (radioButtonIndex >= 0) {
+                            if (divIndex >= 0) {
                                 var percentage = "0%";
                                 
-                                if ($scope.config.options.length > 0 && radioButtonIndex >= 0) {
-                                    percentage = (100 / $scope.config.options.length) * radioButtonIndex;
+                                if ($scope.config.options.length > 0 && divIndex >= 0) {
+                                    percentage = (100 / $scope.config.options.length) * divIndex;
                                     $scope.sliderDivElement.style.left = percentage + "%";
+                                }
+                                
+                                // Make sure that numbers always appear as numbers in the output message (instead of strings)
+                                if ($scope.config.options[divIndex].valueType === "num") {
+                                    newValue = Number(newValue);
                                 }
                                     
                                 $scope.send({payload: newValue});
