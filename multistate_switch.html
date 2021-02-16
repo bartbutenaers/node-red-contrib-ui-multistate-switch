@@ -20,7 +20,7 @@
             group: {type: 'ui_group', required:true},
             order: {value: 0},
             width: {
-                value: 3,
+                value: 0,
                 validate: function(v) {
                     var valid = true
                     var width = v||0;
@@ -30,7 +30,7 @@
                     $("#node-input-size").toggleClass("input-error",!valid);
                     return valid;
                 }},
-            height: {value: 1},
+            height: {value: 0},
             name: {value: ''},
             options: {value: []}
         },
@@ -62,7 +62,9 @@
 
                     // Column 2 : Add an input field (type string) to the new row, that represents the option value
                     var valueField = $('<input/>',{class:"node-input-option-value",type:"text"}).css({"width":"45%","margin-left":"5px","margin-right":"5px"}).appendTo(row);
-                    valueField.val(option.value || "option_" + i);
+                    valueField.typedInput({types: ['str', 'num']});
+                    valueField.typedInput("type", option.valueType || "str");
+                    valueField.typedInput("value", option.value || "option_" + i);
                 },
                 removable: true
             });
@@ -70,7 +72,7 @@
             // Show all the options (stored in this node) into the editableList
             if (this.options) {
                 this.options.forEach(function (option, index) {
-                    optionsList.editableList('addItem', {label:option.label, value:option.value});
+                    optionsList.editableList('addItem', {label:option.label, value:option.value, valueType:option.valueType});
                 });
             }
         },
@@ -81,11 +83,12 @@
             node.options = [];
             var optionsList = $("#node-input-options-container").editableList('items');
             optionsList.each(function(i) {
-                var option = $(this);
-                var label  = option.find(".node-input-option-label").val();
-                var value  = option.find(".node-input-option-value").val();
-
-                node.options.push({label:label, value:value});
+                var option    = $(this);
+                var label     = option.find(".node-input-option-label").val();
+                var value     = option.find(".node-input-option-value").typedInput('value');
+                var valueType = option.find(".node-input-option-value").typedInput('type');
+                
+                node.options.push({label:label, value:value, valueType:valueType});
             });
         }
     });
