@@ -25,63 +25,63 @@ module.exports = function(RED) {
         // The configuration is a Javascript object, which needs to be converted to a JSON string
         var configAsJson = JSON.stringify(config);
 
-        // Make sure to set the width and height via CSS style (instead of the width and height html element attributes).
-        // This way the dashboard can calculate the size of the div correctly.  See:
-        // https://discourse.nodered.org/t/custom-ui-node-layout-problems/7731/21?u=bartbutenaers)
+        // - Make sure to set the width and height via CSS style (instead of the width and height html element attributes).
+        //   This way the dashboard can calculate the size of the div correctly.  See:
+        //   https://discourse.nodered.org/t/custom-ui-node-layout-problems/7731/21?u=bartbutenaers)
+        // - The slider width: calc((100% - 2em) / 3); takes account of font size and makes itsel 2 unit smaller at the left
+        // - Transform: translate(0.25em, 0px); moves quarter amount to right.
+        //   That gives you oportunity to use straight percentages for positions (0%, 33%, 66%) (0%, 25%, 50%, 75%)
         var html = String.raw`
         <style>
-            .switchwrapper { 
+            .multistate-switch-wrapper{
+                border:1px solid var(--nr-dashboard-widgetColor);
+                display: flex;
+                flex-flow: column nowrap;
+                justify-content: center;
+                align-items: center;
+                position:relative;
                 margin: auto 0;
             }
-            .toggle_radio{
-                position: relative; 
-                margin: auto;
-                overflow: hidden;
-                border-radius: 50px;
-                position: relative;
-                height: 26px;
-                border: 1px solid var(--nr-dashboard-groupBorderColor);
-                background: var(--nr-dashboard-widgetBgndColor);
+            .multistate-slider-wrapper{
+                height: 1em;
+                padding-top: 0.25em;
+                padding-bottom: 0.25em;
+                z-index:0
             }
-            .toggle_radio > * {
-                float: left;
+            .multistate-switch-body{
+                display: inline-flex;
+                justify-content: flex-start;
+                width: 100%;
             }
-            .toggle_radio input[type=radio]{
-                display: none;
-            }
-            .toggle_radio label{
-                display: block;
-                height: 20px;
-                margin: 0;
-                line-height :18px;
-                border-radius: 50px;
-                cursor: pointer;
-                z-index: 1;
-                text-align: center;
-            }
-            .toggle_radio label >p {
-                background:transparent !important;
-            }
-            .toggle_option_slider{
-                height: 20px;
+            .multistate-switch-slider{
+                width: calc((100% - 2em) / 3);
+                background-color: var(--nr-dashboard-widgetColor);
                 position: absolute;
-                top: 3px;
-                border-radius: 50px;
+                height: 1em;
+                transform: translate(0.25em, 0px);
                 transition: all .4s ease;
+                left: 0%;
                 z-index:0;
-                left:3px;
-                opacity:0.4;
-            background: var(--nr-dashboard-widgetColor);
-        }
+            }
+            .multistate-switch-button{
+               width:calc(100% / 3); 
+               text-align:center;
+               z-index:1;
+               outline: none;
+               user-select:none;
+            }
         </style>
 
-        <div id="multiStateSwitchContainer_` + config.id + `" class="switchwrapper" ng-init='init(` + configAsJson + `)'>
-            <div class="toggle_radio">
-               
+        <div id="multiStateSwitchContainer_` + config.id + `" class="multistate-switch-wrapper" ng-init='init(` + configAsJson + `)'>
+            <div class="multistate-switch-body">
+                <div class="multistate-slider-wrapper">
+                    <div id="multiStateSwitchSlider_` + config.id + `" class="multistate-switch-slider"></div>
+                </div>
+                <!-- The radio buttons will be inserted here dynamically on the frontend side -->
             </div>
         </div>
         `;
-        
+
         return html;
     }
     
@@ -134,55 +134,22 @@ module.exports = function(RED) {
                         $scope.init = function (config) {
                             $scope.config = config;
 
-                            $scope.containerDiv = $("#multiStateSwitchContainer_" + config.id);
+                            $scope.containerDiv = $("#multiStateSwitchContainer_" + config.id)[0];
+                            $scope.sliderDivElement = $("#multiStateSwitchSlider_" + config.id)[0];
                             
                             // Get a reference to the sub-DIV element
-                            var toggleRadioDiv = $scope.containerDiv[0].firstElementChild;
-                            
-                            // Create a slider DIV element 
-                            $scope.sliderDivElement = document.createElement("div");
-                            $scope.sliderDivElement.setAttribute("id", "multiStateSwitchSlider_" + config.id);
-                            $scope.sliderDivElement.setAttribute("class", "toggle_option_slider");
-                            if ($scope.config.options.length === 0) {
-                                $scope.sliderDivElement.style.width = "100%";
-                            }
-                            else {
-                                // The slider width depends on the number of options
-                                $scope.sliderDivElement.style.width = (100 / $scope.config.options.length) + "%";
-                            }
-                            toggleRadioDiv.appendChild($scope.sliderDivElement);
-                            
+                            var toggleRadioDiv = $scope.containerDiv.firstElementChild;
+
                             // Create all the required radio button elements
                             config.options.forEach(function (option, index) {
-                                var inputElement = document.createElement("input");
-                                inputElement.setAttribute("type", "radio");
-                                inputElement.setAttribute("id", "radioButton_" + config.id + "_" + index);
-                                inputElement.setAttribute("class", "toggle_option");
-                                inputElement.setAttribute("name", "toggle_option"); // group name
-                                inputElement.setAttribute("value", option.value);
-                                inputElement.setAttribute("ng-model", "radioButton.value");
-                                inputElement.addEventListener("click",  function() {
+                                var divElement = document.createElement("div");
+                                divElement.setAttribute("class", "multistate-switch-button");
+                                divElement.innerHTML = option.label;
+                                divElement.addEventListener("click",  function() {
                                     switchStateChanged(option.value);
                                 });
-                                
-                                if (index === 0) {
-                                    inputElement.checked = true;
-                                }
-                                
-                                var labelElement = document.createElement("label");
-                                if ($scope.config.options.length === 0) {
-                                    labelElement.style.width = "100%";
-                                }
-                                else {
-                                    // The radio button width depends on the number of options
-                                    labelElement.style.width = (100 / $scope.config.options.length) + "%";
-                                }
-                                var paragraphElement = document.createElement("p");
-                                paragraphElement.innerHTML = "<p>" + option.label + "</p>";
-                                labelElement.appendChild(inputElement);
-                                labelElement.appendChild(paragraphElement);
-                                
-                                toggleRadioDiv.appendChild(labelElement);
+
+                                toggleRadioDiv.appendChild(divElement);
                             });
                         }
 
@@ -198,7 +165,7 @@ module.exports = function(RED) {
                         
                         function switchStateChanged(newValue) {
                             var radioButtonIndex = -1;
-                            
+      
                             // Try to find an option with a value identical to the specified value
                             $scope.config.options.forEach(function (option, index) {
                                 if (option.value === newValue) {
@@ -207,11 +174,10 @@ module.exports = function(RED) {
                             });
                             
                             if (radioButtonIndex >= 0) {
-                                if (radioButtonIndex == 0) {
-                                    $scope.sliderDivElement.style.left = "3px";
-                                }
-                                else {
-                                    var percentage = (100 / $scope.config.options.length) * radioButtonIndex;
+                                var percentage = "0%";
+                                
+                                if ($scope.config.options.length > 0 && radioButtonIndex >= 0) {
+                                    percentage = (100 / $scope.config.options.length) * radioButtonIndex;
                                     $scope.sliderDivElement.style.left = percentage + "%";
                                 }
                                     
