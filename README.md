@@ -9,18 +9,24 @@ Run the following npm command in your Node-RED user directory (typically ~/.node
 npm install node-red-contrib-ui-multistate-switch
 ```
 
-## Use cases
-A list of possible use cases for this node:
+## Node usage
+This node allows to show a multi-state switch in a few steps:
 
-+ Switch a thermostate on/off manually, or put it on automatic (i.e. controlled e.g. by a setpoint profile):
+1. Specify all the available options in the config screen:
 
-   ![thermostat](https://user-images.githubusercontent.com/14224149/107996107-de209700-6fdf-11eb-9ff4-4974e8cbe9bf.png)
+   ![Config screen](https://user-images.githubusercontent.com/14224149/108125938-79ca0a00-70a9-11eb-8b0b-4f714ddcab93.png)
+   
+   The ***label*** is the text that will be displayed, while the ***value*** will be used in the input and output messages.
 
-+ Switch a light on/off manually, or put it on automatic (i.e; controlled by a PIR sensor):
+2. These options will be displayed in the dashboard:
 
-   ![ligth](https://user-images.githubusercontent.com/14224149/107996070-ca753080-6fdf-11eb-96cd-09907673487d.png)
+   ![mult_switch_demo](https://user-images.githubusercontent.com/14224149/108126201-da594700-70a9-11eb-8587-5cc11516ae4a.gif)
 
-# Example flow
+   As soon as a button is clicked, it's value will be send in the `msg.payload` of the output message.
+   
+ 3. It is also possible to inject an input message, with the new value in the `msg.payload`.  The corresponding option will automatically be selected in the dashboard.
+
+## Example flow
 
 The following flow shows switch button with 2, 3 and 4 states:
 
@@ -32,3 +38,14 @@ The following flow shows switch button with 2, 3 and 4 states:
 Some notes about the messages:
 + ***Input msg***: the `msg.payload` should contain the value of the option that needs to be selected.
 + ***Output msg***: the `msg.payload` will contain the value of the option that has been selected.
+
+## Use cases
+A list of possible use cases for this node:
+
++ Switch a thermostate on/off manually, or put it on automatic mode (i.e. controlled e.g. by a setpoint profile):
+
+   ![thermostat](https://user-images.githubusercontent.com/14224149/107996107-de209700-6fdf-11eb-9ff4-4974e8cbe9bf.png)
+
++ Switch a light on/off manually, or put it on automatic mode (i.e; controlled by a PIR sensor):
+
+   ![ligth](https://user-images.githubusercontent.com/14224149/107996070-ca753080-6fdf-11eb-96cd-09907673487d.png)
