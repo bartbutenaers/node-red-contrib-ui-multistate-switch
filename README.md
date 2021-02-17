@@ -26,6 +26,10 @@ This node allows to show a multi-state switch in a few steps:
    
  3. It is also possible to inject an input message, with the new value in the `msg.payload`.  The corresponding option will automatically be selected in the dashboard.
 
+ 4. Note that a larger series of short options can be specified:
+
+    ![large series](https://user-images.githubusercontent.com/14224149/108268345-aa26ac80-716c-11eb-9e26-c437d2a243c2.png)
+
 ## Styling with CSS
 It is very easy to adjust the styling of this switch widget by using CSS.
 
