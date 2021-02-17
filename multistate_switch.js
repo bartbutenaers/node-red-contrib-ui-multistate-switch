@@ -81,6 +81,7 @@ module.exports = function(RED) {
                z-index:1;
                outline: none;
                user-select:none;
+               cursor:pointer;
             }
         </style>
         <div class="multistate-switch-container" ng-init='init(` + configAsJson + `)'>
