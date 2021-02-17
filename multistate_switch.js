@@ -62,13 +62,13 @@ module.exports = function(RED) {
                 width: 100%;
             }
             .multistate-switch-slider-${config.id}{
-                width: calc((100% - (${config.options.length} * 0.65em)) / ${config.options.length});
+                width: calc((100% - (${config.options.length} * 0.5em)) / ${config.options.length});
             }
             .multistate-switch-slider{                
                 background-color: var(--nr-dashboard-widgetColor);
                 position: absolute;
-                height: 1em;
-                transform: translate(0.25em, 0px);
+                height: 1.2em;
+                transform: translate(0.25em, -0.08em);
                 transition: all .4s ease;
                 left: 0%;
                 z-index:0;
