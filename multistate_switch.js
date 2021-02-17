@@ -83,13 +83,16 @@ module.exports = function(RED) {
                user-select:none;
                cursor:pointer;
             }
+            .multistate-switch-round{
+                border-radius: 1em;
+            }
         </style>
         <div class="multistate-switch-container" ng-init='init(` + configAsJson + `)'>
             <div ng-if="${config.label != ""}" class="multistate-switch-label">${config.label}</div>            
-            <div id="multiStateSwitchContainer_` + config.id + `" class="multistate-switch-wrapper">
+            <div id="multiStateSwitchContainer_` + config.id + `" class="multistate-switch-wrapper" ng-class="{'multistate-switch-round':(config.rounded)}">
                 <div class="multistate-switch-body">
                     <div class="multistate-slider-wrapper">
-                        <div id="multiStateSwitchSlider_` + config.id + `" class="multistate-switch-slider multistate-switch-slider-` + config.id + `"></div>
+                        <div id="multiStateSwitchSlider_` + config.id + `" class="multistate-switch-slider multistate-switch-slider-` + config.id + `" ng-class="{'multistate-switch-round':(config.rounded)}"></div>
                     </div>
                     <!-- The radio buttons will be inserted here dynamically on the frontend side -->
                 </div>
@@ -115,7 +118,8 @@ module.exports = function(RED) {
             var node = this;
             if(ui === undefined) {
                 ui = RED.require("node-red-dashboard")(RED);
-            }           
+            }  
+            config.rounded = false         
             RED.nodes.createNode(this, config);
 
             if (checkConfig(node, config)) { 
