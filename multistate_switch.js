@@ -119,7 +119,6 @@ module.exports = function(RED) {
             if(ui === undefined) {
                 ui = RED.require("node-red-dashboard")(RED);
             }  
-            config.rounded = false         
             RED.nodes.createNode(this, config);
 
             if (checkConfig(node, config)) { 
