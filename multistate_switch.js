@@ -222,5 +222,5 @@ module.exports = function(RED) {
         });
     }
 
-    RED.nodes.registerType("ui_mult_state_switch", MultiStateSwitchNode);
+    RED.nodes.registerType("ui_multistate_switch", MultiStateSwitchNode);
 }
