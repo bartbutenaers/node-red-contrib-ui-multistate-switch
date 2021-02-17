@@ -33,6 +33,13 @@ module.exports = function(RED) {
         //   That gives you oportunity to use straight percentages for positions (0%, 33%, 66%) (0%, 25%, 50%, 75%)
         var html = String.raw`
         <style>
+            .multistate-switch-container{
+                display:flex;
+                width:100%;
+            }
+            .multistate-switch-label{
+                padding-right:1em;
+            }
             .multistate-switch-wrapper{
                 border:1px solid var(--nr-dashboard-widgetColor);
                 display: flex;
@@ -41,6 +48,7 @@ module.exports = function(RED) {
                 align-items: center;
                 position:relative;
                 margin: auto 0;
+                width:100%;
             }
             .multistate-slider-wrapper{
                 height: 1em;
@@ -53,8 +61,10 @@ module.exports = function(RED) {
                 justify-content: flex-start;
                 width: 100%;
             }
-            .multistate-switch-slider{
-                width: calc((100% - 2em) / 3);
+            .multistate-switch-slider-${config.id}{
+                width: calc((100% - (${config.options.length} * 0.65em)) / ${config.options.length});
+            }
+            .multistate-switch-slider{                
                 background-color: var(--nr-dashboard-widgetColor);
                 position: absolute;
                 height: 1em;
@@ -63,21 +73,25 @@ module.exports = function(RED) {
                 left: 0%;
                 z-index:0;
             }
-            .multistate-switch-button{
-               width:calc(100% / 3); 
+            .multistate-switch-button-${config.id}{
+                width:calc(100% / ${config.options.length}); 
+            }
+            .multistate-switch-button{              
                text-align:center;
                z-index:1;
                outline: none;
                user-select:none;
             }
         </style>
-
-        <div id="multiStateSwitchContainer_` + config.id + `" class="multistate-switch-wrapper" ng-init='init(` + configAsJson + `)'>
-            <div class="multistate-switch-body">
-                <div class="multistate-slider-wrapper">
-                    <div id="multiStateSwitchSlider_` + config.id + `" class="multistate-switch-slider"></div>
+        <div class="multistate-switch-container" ng-init='init(` + configAsJson + `)'>
+            <div ng-if="${config.label != ""}" class="multistate-switch-label">${config.label}</div>            
+            <div id="multiStateSwitchContainer_` + config.id + `" class="multistate-switch-wrapper">
+                <div class="multistate-switch-body">
+                    <div class="multistate-slider-wrapper">
+                        <div id="multiStateSwitchSlider_` + config.id + `" class="multistate-switch-slider multistate-switch-slider-` + config.id + `"></div>
+                    </div>
+                    <!-- The radio buttons will be inserted here dynamically on the frontend side -->
                 </div>
-                <!-- The radio buttons will be inserted here dynamically on the frontend side -->
             </div>
         </div>
         `;
@@ -100,8 +114,7 @@ module.exports = function(RED) {
             var node = this;
             if(ui === undefined) {
                 ui = RED.require("node-red-dashboard")(RED);
-            }
-
+            }           
             RED.nodes.createNode(this, config);
 
             if (checkConfig(node, config)) { 
@@ -140,10 +153,10 @@ module.exports = function(RED) {
                             // Get a reference to the sub-DIV element
                             var toggleRadioDiv = $scope.containerDiv.firstElementChild;
 
-                            // Create all the required radio button elements
+                            // Create all the required  button elements
                             config.options.forEach(function (option, index) {
                                 var divElement = document.createElement("div");
-                                divElement.setAttribute("class", "multistate-switch-button");
+                                divElement.setAttribute("class", "multistate-switch-button multistate-switch-button-"+config.id);
                                 divElement.innerHTML = option.label;
                                 divElement.addEventListener("click",  function() {
                                     switchStateChanged(option.value);
