@@ -168,7 +168,7 @@ module.exports = function(RED) {
 
                         $scope.$watch('msg', function(msg) {
                             // Ignore undefined messages.
-                            if (!msg || !msg.payload) {
+                            if (!msg || msg.payload == undefined) {
                                 return;
                             }
 
