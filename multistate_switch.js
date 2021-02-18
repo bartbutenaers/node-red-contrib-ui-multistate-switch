@@ -203,7 +203,10 @@ module.exports = function(RED) {
                                 if ($scope.config.options.length > 0 && divIndex >= 0) {
                                     percentage = (100 / $scope.config.options.length) * divIndex;
                                     $scope.sliderDivElement.style.left = percentage + "%";
-                                    $scope.sliderDivElement.style.backgroundColor = $scope.config.options[divIndex].color;
+          
+                                    if ($scope.config.useThemeColors != true) {
+                                        $scope.sliderDivElement.style.backgroundColor = $scope.config.options[divIndex].color;
+                                    }
                                 }
                                 
                                 // Make sure that numbers always appear as numbers in the output message (instead of strings)
