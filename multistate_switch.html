@@ -33,7 +33,7 @@
             height: {value: 0},
             name: {value: ''},
             label: {value: 'switch'},
-            rounded: {value: 0},
+            rounded: {value: false},
             options: {value: []}
         },
         inputs:1,
@@ -47,15 +47,24 @@
         oneditprepare: function() {
             // Add a default rounding of 0em to older nodes (version 1.0.0)
             if (this.rounded == undefined) {
-                $('#node-input-rounded').val(0);
+                this.rounded = false                
             }
-        
+           
+            $('#node-input-rounded').change(function () {
+                if (this.checked == true) {
+                    $("#appearance-square").css('opacity',"0.4");
+                    $("#appearance-round").css('opacity',"1");                   
+                }else{
+                    $("#appearance-square").css('opacity',"1");
+                    $("#appearance-round").css('opacity',"0.4"); 
+                }
+            })
             $("#node-input-size").elementSizer({
                 width: "#node-input-width",
                 group: "#node-input-group"
             });
            
-            var optionsList = $("#node-input-options-container").css('min-height','250px').css('min-width','450px').editableList({
+            var optionsList = $("#node-input-options-container").css('min-height','200px').editableList({
                 header: $("<div>").append($.parseHTML(
                    "<div style='width:45%; margin-left:5px; display: inline-grid'><b>Label</b></div>" +
                    "<div style='width:45%; margin-left:5px; display: inline-grid'><b>Value</b></div>")),
@@ -97,6 +106,7 @@
                 
                 node.options.push({label:label, value:value, valueType:valueType});
             });
+            
         }
     });
 </script>
@@ -120,11 +130,14 @@
         <label for="node-input-label"><i class="fa fa-i-cursor"></i> Label</label>
         <input type="text" id="node-input-label">
     </div>
-    <div class="form-row">
-        <label for="node-input-label"><i class="fa fa-circle-o-notch"></i> Rounded</label>
-        <input type="number" id="node-input-rounded" min="0" step="1">
-         <span for="node-input-rounded" style="margin-left:5px;">em</span>
-    </div>
+    
+    <div class='form-row'>
+        <label for='node-input-rounded'><i class='fa fa-gear'></i> Appearance</span></label>        
+        <span id="appearance-square" style="opacity:1; border:1px solid; padding: 3px 20px 2px 5px; "><i class="fa fa-square"></i></span>
+        <input type="checkbox" id="node-input-rounded" style="display:inline-block; width:auto; vertical-align:baseline; margin-right:5px; margin-left:5px;">
+        <span id="appearance-round" style="opacity:1; border:1px solid; border-radius:15px; padding: 3px 20px 2px 5px; "><i class="fa fa-circle"></i></span>
+    </div> 
+   
     <div class="form-row" style="margin-bottom:0;">
         <label><i class="fa fa-list"></i> Options:</label>
     </div>
