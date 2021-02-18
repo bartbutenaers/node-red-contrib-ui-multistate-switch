@@ -12,7 +12,7 @@ npm install node-red-contrib-ui-multistate-switch
 ## Node usage
 This node allows to show a multi-state switch in a few steps:
 
-1. Specify all the available options in the config screen:
+1. Specify in the config screen to use the theme colors, or otherwise specify a separate color for each option:
 
    ![Config screen](https://user-images.githubusercontent.com/14224149/108424269-3d2d1880-7239-11eb-9b36-b125b8df632e.png)
    
