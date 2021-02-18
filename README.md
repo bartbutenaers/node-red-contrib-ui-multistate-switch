@@ -30,14 +30,17 @@ This node allows to show a multi-state switch in a few steps:
 
     ![large series](https://user-images.githubusercontent.com/14224149/108268345-aa26ac80-716c-11eb-9e26-c437d2a243c2.png)
 
-## Styling with CSS
-It is very easy to adjust the styling of this switch widget by using CSS.
+## Styling
+It is very easy to adjust the styling of this switch widget in two ways:
 
-The following `flow contains a Template node with a very simple CSS script to get rounded corners:
-```
-[{"id":"11079fb1.5eebe","type":"ui_template","z":"2b6f5d19.202242","group":"9f2da61.3353758","name":"Dashboard CSS","order":2,"width":12,"height":1,"format":"<style>\n    .multistate-switch-wrapper{\n        border-radius:15px;\n    }\n    .multistate-switch-slider{\n        border-radius:15px;\n    }\n</style>","storeOutMessages":true,"fwdInMessages":true,"resendOnRefresh":true,"templateScope":"global","x":460,"y":1960,"wires":[[]]},{"id":"1730cdc0.2bad52","type":"ui_multistate_switch","z":"2b6f5d19.202242","name":"","group":"28a39865.fa3608","order":2,"width":"9","height":0,"label":"Thermostat","options":[{"label":"Option 0","value":"option_0","valueType":"str"},{"label":"Option 1","value":"option_1","valueType":"str"},{"label":"Option 2","value":"option_2","valueType":"str"}],"x":460,"y":1900,"wires":[[]]},{"id":"9f2da61.3353758","type":"ui_group","name":"Flight","tab":"d6d3c358.5fb46","order":1,"disp":true,"width":"12","collapse":false},{"id":"28a39865.fa3608","type":"ui_group","z":"","name":"Default","tab":"d8520920.0128d8","order":1,"disp":true,"width":"9","collapse":false},{"id":"d6d3c358.5fb46","type":"ui_tab","name":"Home","icon":"dashboard","order":1,"disabled":false,"hidden":false},{"id":"d8520920.0128d8","type":"ui_tab","name":"Home","icon":"dashboard","disabled":false,"hidden":false}]
-```
-Which will look like this:
+1. By adjusting the *"rounded"* setting in the config screen, the borders of this widget can be rounded easily.  The rounding needs to be specified with unit 'em', which means relative to the font-size of the switch.  For example <code>2em</code> means 2 times the font-size.
+
+2. By using CSS.  The following flow contains a Template node with a very simple CSS script to get rounded corners:
+   ```
+   [{"id":"11079fb1.5eebe","type":"ui_template","z":"2b6f5d19.202242","group":"9f2da61.3353758","name":"Dashboard CSS","order":2,"width":12,"height":1,"format":"<style>\n    .multistate-switch-wrapper{\n        border-radius:15px;\n    }\n    .multistate-switch-slider{\n        border-radius:15px;\n    }\n</style>","storeOutMessages":true,"fwdInMessages":true,"resendOnRefresh":true,"templateScope":"global","x":460,"y":1960,"wires":[[]]},{"id":"1730cdc0.2bad52","type":"ui_multistate_switch","z":"2b6f5d19.202242","name":"","group":"28a39865.fa3608","order":2,"width":"9","height":0,"label":"Thermostat","options":[{"label":"Option 0","value":"option_0","valueType":"str"},{"label":"Option 1","value":"option_1","valueType":"str"},{"label":"Option 2","value":"option_2","valueType":"str"}],"x":460,"y":1900,"wires":[[]]},{"id":"9f2da61.3353758","type":"ui_group","name":"Flight","tab":"d6d3c358.5fb46","order":1,"disp":true,"width":"12","collapse":false},{"id":"28a39865.fa3608","type":"ui_group","z":"","name":"Default","tab":"d8520920.0128d8","order":1,"disp":true,"width":"9","collapse":false},{"id":"d6d3c358.5fb46","type":"ui_tab","name":"Home","icon":"dashboard","order":1,"disabled":false,"hidden":false},{"id":"d8520920.0128d8","type":"ui_tab","name":"Home","icon":"dashboard","disabled":false,"hidden":false}]
+   ```
+
+The result will look like this:
 
 ![mult_switch_rounded](https://user-images.githubusercontent.com/14224149/108262691-8b70e780-7165-11eb-9a8d-f75f4137016c.gif)
 
