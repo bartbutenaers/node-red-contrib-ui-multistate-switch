@@ -33,6 +33,7 @@
             height: {value: 0},
             name: {value: ''},
             label: {value: 'switch'},
+            rounded: {value: 0},
             options: {value: []}
         },
         inputs:1,
@@ -44,6 +45,11 @@
             return this.name || (~this.label.indexOf("{{") ? null : this.label) || "multistate switch";
         },
         oneditprepare: function() {
+            // Add a default rounding of 0em to older nodes (version 1.0.0)
+            if (this.rounded == undefined) {
+                $('#node-input-rounded').val(0);
+            }
+        
             $("#node-input-size").elementSizer({
                 width: "#node-input-width",
                 group: "#node-input-group"
@@ -114,6 +120,11 @@
         <label for="node-input-label"><i class="fa fa-i-cursor"></i> Label</label>
         <input type="text" id="node-input-label">
     </div>
+    <div class="form-row">
+        <label for="node-input-label"><i class="fa fa-circle-o-notch"></i> Rounded</label>
+        <input type="number" id="node-input-rounded" min="0" step="1">
+         <span for="node-input-rounded" style="margin-left:5px;">em</span>
+    </div>
     <div class="form-row" style="margin-bottom:0;">
         <label><i class="fa fa-list"></i> Options:</label>
     </div>
@@ -126,6 +137,8 @@
     <p>A Node Red node to show a switch with multiple states in the Node-RED dashboard.</p>
     <p><strong>Label:</strong><br/>
     The label that will be displayed on the left side of the button.</p>
+    <p><strong>Rounded:</strong><br/>
+    Optionally the corners of the switch can be rounded.  The rounding needs to be specified with unit 'em', which means relative to the font-size of the switch.  For example <code>2em</code> means 2 times the font-size.</p>
     <p><strong>Options:</strong><br/>
     Specify which options need to be displayed:
         <ul>
