@@ -161,11 +161,16 @@ module.exports = function(RED) {
 
                             // Create all the required  button elements
                             config.options.forEach(function (option, index) {
+                                if (index === 0) {
+                                    // Make sure the initial element gets the correct color
+                                    switchStateChanged(option.value, false);
+                                }
+                                
                                 var divElement = document.createElement("div");
                                 divElement.setAttribute("class", "multistate-switch-button multistate-switch-button-"+config.id);
                                 divElement.innerHTML = option.label;
                                 divElement.addEventListener("click",  function() {
-                                    switchStateChanged(option.value);
+                                    switchStateChanged(option.value, true);
                                 });
 
                                 toggleRadioDiv.appendChild(divElement);
@@ -179,10 +184,10 @@ module.exports = function(RED) {
                             }
 
                             // The msg.payload contains the new switch state value
-                            switchStateChanged(msg.payload);
+                            switchStateChanged(msg.payload, true);
                         });
-                        
-                        function switchStateChanged(newValue) {
+                                
+                        function switchStateChanged(newValue, sendMsg) {
                             var divIndex = -1;
       
                             // Try to find an option with a value identical to the specified value
@@ -194,18 +199,21 @@ module.exports = function(RED) {
                             
                             if (divIndex >= 0) {
                                 var percentage = "0%";
-                                
+          
                                 if ($scope.config.options.length > 0 && divIndex >= 0) {
                                     percentage = (100 / $scope.config.options.length) * divIndex;
                                     $scope.sliderDivElement.style.left = percentage + "%";
+                                    $scope.sliderDivElement.style.backgroundColor = $scope.config.options[divIndex].color;
                                 }
                                 
                                 // Make sure that numbers always appear as numbers in the output message (instead of strings)
                                 if ($scope.config.options[divIndex].valueType === "num") {
                                     newValue = Number(newValue);
                                 }
-                                    
-                                $scope.send({payload: newValue});
+                                
+                                if (sendMsg) {
+                                    $scope.send({payload: newValue});
+                                }
                             }
                             else {
                                 console.log("No radio button has value '" + newValue + "'");
