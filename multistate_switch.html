@@ -63,24 +63,40 @@
                 width: "#node-input-width",
                 group: "#node-input-group"
             });
-           
+            
+            // Get a (default) color
+            function getColor(idx) {
+                var colors = ['#009933', '#999999', '#ff6666', '#009999', '#cccc00', '#ff33cc', '#cc6600',
+                    '#99ff66', '#660033'
+                ]
+                if (idx > colors.length - 1) {
+                    return colors[Math.floor(Math.random() * colors.length)]
+                }
+                return colors[idx]
+            }
+
             var optionsList = $("#node-input-options-container").css('min-height','200px').editableList({
                 header: $("<div>").append($.parseHTML(
-                   "<div style='width:45%; margin-left:5px; display: inline-grid'><b>Label</b></div>" +
-                   "<div style='width:45%; margin-left:5px; display: inline-grid'><b>Value</b></div>")),
+                   "<div style='width:40%; display: inline-grid'><b>Label</b></div>" +
+                   "<div style='width:40%; display: inline-grid'><b>Value</b></div>" +
+                   "<div style='width:10%; display: inline-grid'><b>Color</b></div>")),
                 addItem: function(container, i, option) {
                     // Add a new row to the editableList
                     var row = $('<div/>').appendTo(container);
                     
                     // Column 1 : Add an input field (type string) to the new row, that represents the option label
-                    var labelField = $('<input/>',{class:"node-input-option-label",type:"text"}).css({"width":"45%","margin-left":"5px","margin-right":"5px"}).appendTo(row);
+                    var labelField = $('<input/>',{class:"node-input-option-label",type:"text"}).css({"width":"40%","margin-left":"5px","margin-right":"5px"}).appendTo(row);
                     labelField.val(option.label || "Option " + i);                   
 
                     // Column 2 : Add an input field (type string) to the new row, that represents the option value
-                    var valueField = $('<input/>',{class:"node-input-option-value",type:"text"}).css({"width":"45%","margin-left":"5px","margin-right":"5px"}).appendTo(row);
+                    var valueField = $('<input/>',{class:"node-input-option-value",type:"text"}).css({"width":"40%","margin-left":"5px","margin-right":"5px"}).appendTo(row);
                     valueField.typedInput({types: ['str', 'num']});
                     valueField.typedInput("type", option.valueType || "str");
                     valueField.typedInput("value", option.value || "option_" + i);
+                    
+                    // Column 3 : Add an input field (type color) to the new row, that represents the option color
+                    var colorField = $('<input/>',{class:"node-input-option-color",type:"color"}).css({"width":"10%","margin-left":"5px"}).appendTo(row);
+                    colorField.val(option.color || getColor(i));   
                 },
                 removable: true
             });
@@ -88,7 +104,7 @@
             // Show all the options (stored in this node) into the editableList
             if (this.options) {
                 this.options.forEach(function (option, index) {
-                    optionsList.editableList('addItem', {label:option.label, value:option.value, valueType:option.valueType});
+                    optionsList.editableList('addItem', {label:option.label, value:option.value, valueType:option.valueType, color:option.color});
                 });
             }
         },
@@ -103,8 +119,9 @@
                 var label     = option.find(".node-input-option-label").val();
                 var value     = option.find(".node-input-option-value").typedInput('value');
                 var valueType = option.find(".node-input-option-value").typedInput('type');
+                var color     = option.find(".node-input-option-color").val();
                 
-                node.options.push({label:label, value:value, valueType:valueType});
+                node.options.push({label:label, value:value, valueType:valueType, color:color});
             });
             
         }
