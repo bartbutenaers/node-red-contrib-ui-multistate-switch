@@ -14,13 +14,15 @@ This node allows to show a multi-state switch in a few steps:
 
 1. Specify all the available options in the config screen:
 
-   ![Config screen](https://user-images.githubusercontent.com/14224149/108125938-79ca0a00-70a9-11eb-8b0b-4f714ddcab93.png)
+   ![Config screen](https://user-images.githubusercontent.com/14224149/108424269-3d2d1880-7239-11eb-9b36-b125b8df632e.png)
    
-   The ***label*** is the text that will be displayed, while the ***value*** will be used in the input and output messages.
+   + The ***label*** is the text that will be displayed.
+   + The ***value*** will be the payload in the input and output messages.
+   + The ***color*** is the color of the options.
 
 2. These options will be displayed in the dashboard:
 
-   ![multi_switch_demo](https://user-images.githubusercontent.com/14224149/108126201-da594700-70a9-11eb-8587-5cc11516ae4a.gif)
+   ![multi_switch_color_demo](https://user-images.githubusercontent.com/14224149/108424592-af056200-7239-11eb-9255-217b36a35576.gif)
 
    As soon as a button is clicked, it's value will be send in the `msg.payload` of the output message.
    
@@ -33,7 +35,9 @@ This node allows to show a multi-state switch in a few steps:
 ## Styling
 It is very easy to adjust the styling of this switch widget in two ways:
 
-1. By adjusting the *"rounded"* setting in the config screen, the borders of this widget can be rounded easily.  The rounding needs to be specified with unit 'em', which means relative to the font-size of the switch.  For example <code>2em</code> means 2 times the font-size.
+1. By selecting the "appearance" of the switch in the config screen:
+
+   ![Appearance](https://user-images.githubusercontent.com/14224149/108424913-102d3580-723a-11eb-8609-027951e6b4f8.png)
 
 2. By using CSS.  The following flow contains a Template node with a very simple CSS script to get rounded corners:
    ```
