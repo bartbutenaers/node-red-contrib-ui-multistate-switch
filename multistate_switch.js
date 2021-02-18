@@ -21,6 +21,11 @@ module.exports = function(RED) {
         // Replace the dots in the id (by underscores), because we use it in element identifiers.
         // And then dots are not allowed, because otherwise you cannot find the element by id!
         config.id = config.id.replace(".", "_");
+        
+        // Add a default rounding of 0em to older nodes (version 1.0.0)
+        if (config.rounded == undefined) {
+            config.rounded = 0;
+        }
     
         // The configuration is a Javascript object, which needs to be converted to a JSON string
         var configAsJson = JSON.stringify(config);
@@ -89,10 +94,10 @@ module.exports = function(RED) {
         </style>
         <div class="multistate-switch-container" ng-init='init(` + configAsJson + `)'>
             <div ng-if="${config.label != ""}" class="multistate-switch-label">${config.label}</div>            
-            <div id="multiStateSwitchContainer_` + config.id + `" class="multistate-switch-wrapper" ng-class="{'multistate-switch-round':(config.rounded)}">
+            <div id="multiStateSwitchContainer_` + config.id + `" class="multistate-switch-wrapper" ng-class="{'multistate-switch-round':` + config.rounded + `}">
                 <div class="multistate-switch-body">
                     <div class="multistate-slider-wrapper">
-                        <div id="multiStateSwitchSlider_` + config.id + `" class="multistate-switch-slider multistate-switch-slider-` + config.id + `" ng-class="{'multistate-switch-round':(config.rounded)}"></div>
+                        <div id="multiStateSwitchSlider_` + config.id + `" class="multistate-switch-slider multistate-switch-slider-` + config.id + `" ng-class="{'multistate-switch-round':` + config.rounded + `}"></div>
                     </div>
                     <!-- The radio buttons will be inserted here dynamically on the frontend side -->
                 </div>
