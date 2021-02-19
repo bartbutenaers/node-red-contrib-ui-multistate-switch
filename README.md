@@ -28,25 +28,28 @@ This node allows to show a multi-state switch in a few steps:
    
  3. It is also possible to inject an input message, with the new value in the `msg.payload`.  The corresponding option will automatically be selected in the dashboard.
 
- 4. Note that a larger series of short options can be specified:
-
-    ![large series](https://user-images.githubusercontent.com/14224149/108268345-aa26ac80-716c-11eb-9e26-c437d2a243c2.png)
-
-## Styling
+## Node properties
 It is very easy to adjust the styling of this switch widget in two ways:
 
-1. By selecting the "appearance" of the switch in the config screen:
+### Appearance
+The appearance determines the shape of the switch button, which allows you to have rounded corners:
 
-   ![Appearance](https://user-images.githubusercontent.com/14224149/108424913-102d3580-723a-11eb-8609-027951e6b4f8.png)
+![Appearance](https://user-images.githubusercontent.com/14224149/108561643-e4c04e80-72fe-11eb-88c3-3ea4af5256e6.png)
 
-2. By using CSS.  The following flow contains a Template node with a very simple CSS script to get rounded corners:
-   ```
-   [{"id":"11079fb1.5eebe","type":"ui_template","z":"2b6f5d19.202242","group":"9f2da61.3353758","name":"Dashboard CSS","order":2,"width":12,"height":1,"format":"<style>\n    .multistate-switch-wrapper{\n        border-radius:15px;\n    }\n    .multistate-switch-slider{\n        border-radius:15px;\n    }\n</style>","storeOutMessages":true,"fwdInMessages":true,"resendOnRefresh":true,"templateScope":"global","x":460,"y":1960,"wires":[[]]},{"id":"1730cdc0.2bad52","type":"ui_multistate_switch","z":"2b6f5d19.202242","name":"","group":"28a39865.fa3608","order":2,"width":"9","height":0,"label":"Thermostat","options":[{"label":"Option 0","value":"option_0","valueType":"str"},{"label":"Option 1","value":"option_1","valueType":"str"},{"label":"Option 2","value":"option_2","valueType":"str"}],"x":460,"y":1900,"wires":[[]]},{"id":"9f2da61.3353758","type":"ui_group","name":"Flight","tab":"d6d3c358.5fb46","order":1,"disp":true,"width":"12","collapse":false},{"id":"28a39865.fa3608","type":"ui_group","z":"","name":"Default","tab":"d8520920.0128d8","order":1,"disp":true,"width":"9","collapse":false},{"id":"d6d3c358.5fb46","type":"ui_tab","name":"Home","icon":"dashboard","order":1,"disabled":false,"hidden":false},{"id":"d8520920.0128d8","type":"ui_tab","name":"Home","icon":"dashboard","disabled":false,"hidden":false}]
-   ```
+For advanced users, the following flow contains a Template node with a very simple CSS script to achieve the same result:
+```
+[{"id":"11079fb1.5eebe","type":"ui_template","z":"2b6f5d19.202242","group":"9f2da61.3353758","name":"Dashboard CSS","order":2,"width":12,"height":1,"format":"<style>\n    .multistate-switch-wrapper{\n        border-radius:15px;\n    }\n    .multistate-switch-slider{\n        border-radius:15px;\n    }\n</style>","storeOutMessages":true,"fwdInMessages":true,"resendOnRefresh":true,"templateScope":"global","x":460,"y":1960,"wires":[[]]},{"id":"1730cdc0.2bad52","type":"ui_multistate_switch","z":"2b6f5d19.202242","name":"","group":"28a39865.fa3608","order":2,"width":"9","height":0,"label":"Thermostat","options":[{"label":"Option 0","value":"option_0","valueType":"str"},{"label":"Option 1","value":"option_1","valueType":"str"},{"label":"Option 2","value":"option_2","valueType":"str"}],"x":460,"y":1900,"wires":[[]]},{"id":"9f2da61.3353758","type":"ui_group","name":"Flight","tab":"d6d3c358.5fb46","order":1,"disp":true,"width":"12","collapse":false},{"id":"28a39865.fa3608","type":"ui_group","z":"","name":"Default","tab":"d8520920.0128d8","order":1,"disp":true,"width":"9","collapse":false},{"id":"d6d3c358.5fb46","type":"ui_tab","name":"Home","icon":"dashboard","order":1,"disabled":false,"hidden":false},{"id":"d8520920.0128d8","type":"ui_tab","name":"Home","icon":"dashboard","disabled":false,"hidden":false}]
+```
 
-The result will look like this:
+### Use theme colors
+When activated, the switch will be displayed in the current theme colors.  When not activated, it is possible to select a separate custom color for each option.
 
-![mult_switch_rounded](https://user-images.githubusercontent.com/14224149/108262691-8b70e780-7165-11eb-9a8d-f75f4137016c.gif)
+![Theme colors](https://user-images.githubusercontent.com/14224149/108561941-60ba9680-72ff-11eb-9232-08549bd24172.png)
+
+### Hide label of selected option
+When activated, the label of the selected option will not be displayed:
+
+![Hide label](https://user-images.githubusercontent.com/14224149/108561285-42a06680-72fe-11eb-916e-4f8a49a26a61.png)
 
 ## Example flow
 
@@ -71,3 +74,7 @@ A list of possible use cases for this node:
 + Switch a light on/off manually, or put it on automatic mode (i.e; controlled by a PIR sensor):
 
    ![ligth](https://user-images.githubusercontent.com/14224149/107996070-ca753080-6fdf-11eb-96cd-09907673487d.png)
+
++ Show a larger series of short options:
+
+    ![large series](https://user-images.githubusercontent.com/14224149/108268345-aa26ac80-716c-11eb-9e26-c437d2a243c2.png)
