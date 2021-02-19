@@ -96,7 +96,7 @@ module.exports = function(RED) {
             <div ng-if="${config.label != ""}" class="multistate-switch-label">${config.label}</div>            
             <div id="multiStateSwitchContainer_` + config.id + `" class="multistate-switch-wrapper" ng-class="{'multistate-switch-round':(config.rounded)}">
                 <div class="multistate-switch-body">
-                    <div class="multistate-slider-wrapper">
+                    <div id="multiStateSwitchSliderWrapper_` + config.id + `" class="multistate-slider-wrapper">
                         <div id="multiStateSwitchSlider_` + config.id + `" class="multistate-switch-slider multistate-switch-slider-` + config.id + `" ng-class="{'multistate-switch-round':(config.rounded)}"></div>
                     </div>
                     <!-- The radio buttons will be inserted here dynamically on the frontend side -->
@@ -158,7 +158,14 @@ module.exports = function(RED) {
 
                             $scope.containerDiv = $("#multiStateSwitchContainer_" + config.id)[0];
                             $scope.sliderDivElement = $("#multiStateSwitchSlider_" + config.id)[0];
+                            $scope.sliderWrapperElement = $("#multiStateSwitchSliderWrapper_" + config.id)[0];
                             
+                            // Hide selected label when required (by showing slider on top of buttons)
+                            if (config.hideSelectedLabel == true) {
+                                // Use an inline style to apply this only to this node's slider
+                                $scope.sliderWrapperElement.style.zIndex = 3;
+                            }
+
                             // Get a reference to the sub-DIV element
                             var toggleRadioDiv = $scope.containerDiv.firstElementChild;
 
@@ -199,7 +206,7 @@ module.exports = function(RED) {
                                     divIndex = index;
                                 }
                             });
-                            
+
                             if (divIndex >= 0) {
                                 var percentage = "0%";
           
