@@ -38,9 +38,11 @@ module.exports = function(RED) {
             .multistate-switch-container{
                 display:flex;
                 width:100%;
+                margin:auto;
             }
             .multistate-switch-label{
                 padding-right:1em;
+                line-height: 1.4em;
             }
             .multistate-switch-wrapper{
                 border:1px solid var(--nr-dashboard-widgetColor);
@@ -84,6 +86,7 @@ module.exports = function(RED) {
                outline: none;
                user-select:none;
                cursor:pointer;
+               line-height: 1.4em;
             }
             .multistate-switch-round{
                 border-radius: 1em;
