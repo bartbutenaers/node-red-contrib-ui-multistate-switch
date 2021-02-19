@@ -35,6 +35,7 @@
             label: {value: 'switch'},
             rounded: {value: false},
             useThemeColors: {value: true},
+            hideSelectedLabel: {value: false},
             options: {value: []}
         },
         inputs:1,
@@ -164,15 +165,20 @@
         <input type="text" id="node-input-label">
     </div>
     <div class='form-row'>
-        <label for='node-input-rounded'><i class='fa fa-gear'></i> Appearance</span></label>        
+        <label for='node-input-rounded'><i class='fa fa-gear'></i> Appearance</label>        
         <span id="appearance-square" style="opacity:1; border:1px solid; padding: 3px 20px 2px 5px; "><i class="fa fa-square"></i></span>
         <input type="checkbox" id="node-input-rounded" style="display:inline-block; width:auto; vertical-align:baseline; margin-right:5px; margin-left:5px;">
         <span id="appearance-round" style="opacity:1; border:1px solid; border-radius:15px; padding: 3px 20px 2px 5px; "><i class="fa fa-circle"></i></span>
     </div> 
     <div class="form-row">
-        <label for='node-input-rounded'><i class='fa fa-paintbrush'></i> State colours</span></label> 
-        <input type="checkbox" id="node-input-useThemeColors" style="display: inline-block; width: auto; vertical-align: top;">
-        <label for="node-input-useThemeColors" style="width:70%;"> Use theme colors</label>
+        <label for='node-input-useThemeColors'><i class='fa fa-paint-brush'></i> Colours</label>
+        <input type='checkbox' id='node-input-useThemeColors' style='width:auto ;border:none; vertical-align:baseline;' placeholder='0'>
+        <span for='node-input-useThemeColors'> Use theme colors</span>
+    </div>
+    <div class="form-row">
+        <label for='node-input-hideSelectedLabel'><i class='fa fa-window-close-o'></i> Selection</label>
+        <input type='checkbox' id='node-input-hideSelectedLabel' style='width:auto ;border:none; vertical-align:baseline;' placeholder='0'>
+        <span for='node-input-hideSelectedLabel'> Hide label of selected option</span>
     </div>
     <div class="form-row" style="margin-bottom:0;">
         <label><i class="fa fa-list"></i> Options:</label>
@@ -190,6 +196,8 @@
     Specify whether the shape of the widget should be rectangular or having rounded corners.</p>
     <p><strong>Use theme colors:</strong><br/>
     Specify whether the theme colors should be used.  If not active, custom colors can be specified for each option separately.</p>
+    <p><strong>Hide label of selected option:</strong><br/>
+    Specify whether the label of the selected option should be hidden, i.e. don't need to be displayed on top of the slider.</p>
     <p><strong>Options:</strong><br/>
     Specify which options need to be displayed:
         <ul>
