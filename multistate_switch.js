@@ -178,6 +178,7 @@ module.exports = function(RED) {
                                 
                                 var divElement = document.createElement("div");
                                 divElement.setAttribute("class", "multistate-switch-button multistate-switch-button-"+config.id);
+                                divElement.setAttribute("id", "mstbtn_"+config.id+"_"+index)
                                 divElement.innerHTML = option.label;
                                 divElement.addEventListener("click",  function() {
                                     switchStateChanged(option.value, true);
@@ -192,17 +193,24 @@ module.exports = function(RED) {
                             if (!msg || msg.payload == undefined) {
                                 return;
                             }
-
                             // The msg.payload contains the new switch state value
                             switchStateChanged(msg.payload, true);
                         });
                                 
                         function switchStateChanged(newValue, sendMsg) {
+                            
                             var divIndex = -1;
-      
                             // Try to find an option with a value identical to the specified value
-                            $scope.config.options.forEach(function (option, index) {
+                            // For every button be sure that button exists and change mouse cursor and pointer-events
+                            $scope.config.options.forEach(function (option, index) {                                
+                                if($("#mstbtn_"+$scope.config.id+"_"+index).length){
+                                    $("#mstbtn_"+$scope.config.id+"_"+index).css({"cursor":"pointer","pointer-events":"auto"})
+                                }
                                 if (option.value == newValue) {
+                                    // selected button inactive 
+                                    if($("#mstbtn_"+$scope.config.id+"_"+index).length){
+                                        $("#mstbtn_"+$scope.config.id+"_"+index).css({"cursor":"default","pointer-events":"none"})
+                                    }
                                     divIndex = index;
                                 }
                             });
@@ -222,7 +230,7 @@ module.exports = function(RED) {
                                 // Make sure that numbers always appear as numbers in the output message (instead of strings)
                                 if ($scope.config.options[divIndex].valueType === "num") {
                                     newValue = Number(newValue);
-                                }
+                                }                                
                                 
                                 if (sendMsg) {
                                     $scope.send({payload: newValue});
