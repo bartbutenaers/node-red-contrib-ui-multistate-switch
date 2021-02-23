@@ -194,7 +194,8 @@ module.exports = function(RED) {
                                 return;
                             }
                             // The msg.payload contains the new switch state value
-                            switchStateChanged(msg.payload, true);
+                            // Note that an input message doesn't need to trigger an output message
+                            switchStateChanged(msg.payload, false);
                         });
                                 
                         function switchStateChanged(newValue, sendMsg) {
