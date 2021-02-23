@@ -138,7 +138,7 @@ module.exports = function(RED) {
                     templateScope: "local",
                     emitOnlyNewValues: false,
                     forwardInputMessages: false,
-                    storeFrontEndInputAsState: false,
+                    storeFrontEndInputAsState: true,
                     convertBack: function (value) {
                         return value;
                     },
