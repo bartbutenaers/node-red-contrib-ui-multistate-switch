@@ -69,6 +69,7 @@ The user input (i.e. clicking/touching the buttons) can be, can be controlled vi
 ```
 
 Note that the look and feel of the switch will also change when enabled or not:
+
 ![Disabled switch](https://user-images.githubusercontent.com/14224149/109077361-4b2cde80-76fc-11eb-828c-6fcb32caba6d.png)
 
 ## Example flow
