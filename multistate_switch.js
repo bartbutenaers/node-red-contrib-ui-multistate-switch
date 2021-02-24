@@ -160,8 +160,34 @@ module.exports = function(RED) {
                     convertBack: function (value) {
                         return value;
                     },
-                    beforeEmit: function(msg, value) {
-                        return { msg: msg };
+                    beforeEmit: function(msg, value) {   
+                        var newMsg = {};
+                    
+                        if (msg) {
+                            // Copy the socket id from the original input message. 
+                            newMsg.socketid = msg.socketid;
+                            
+                            // Try to get the specified message fields, and copy those to predefined fixed message fields.
+                            // This way the message has been flattened, so the client doesn't need to access the nested msg properties.
+                            // See https://discourse.nodered.org/t/red-in-ui-nodes/29824/2
+                            try {
+                                // Get the new state value from the specified message field
+                                newMsg.state = RED.util.getMessageProperty(msg, config.stateField || "payload");
+                            } 
+                            catch(err) {
+                                // No problem because the state field is optional ...
+                            }
+                            
+                            try {
+                                // Get the new enable value from the specified message field
+                                newMsg.enable = RED.util.getMessageProperty(msg, config.enableField);
+                            } 
+                            catch(err) {
+                                // No problem because the enable value is optional ...
+                            }
+                        }
+
+                        return { msg: newMsg };
                     },
                     beforeSend: function (msg, orig) {
                         if (orig) {
@@ -204,10 +230,6 @@ module.exports = function(RED) {
 
                                 toggleRadioDiv.appendChild(divElement);
                             });
-                            
-                            if($scope.config.disableUserInput){
-                                disable(true);
-                            }
                         }
 
                         $scope.$watch('msg', function(msg) {
@@ -217,22 +239,16 @@ module.exports = function(RED) {
                             }
 
                             //temporary added here to test the disable/enable functionality                            
-                            if(msg.topic === 'disable'){
-                                disable(true)
-                                return
-                            }
-                            if(msg.topic === 'enable'){
-                                disable(false)
-                                return
-                            }
-                            
-                            if (msg.payload == undefined) {
+                            if(msg.enable === true || msg.enable === false){
+                                disable(!msg.enable);
                                 return;
                             }
-                            
-                            // The msg.payload contains the new switch state value
-                            // Note that an input message doesn't need to trigger an output message
-                            switchStateChanged(msg.payload, false);
+    
+                            if (msg.state != undefined) {
+                                // The msg.payload contains the new switch state value
+                                // Note that an input message doesn't need to trigger an output message
+                                switchStateChanged(msg.state, false);
+                            }
                         });
 
                         function disable(state){                            
