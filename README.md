@@ -51,6 +51,18 @@ When activated, the label of the selected option will not be displayed:
 
 ![Hide label](https://user-images.githubusercontent.com/14224149/108561285-42a06680-72fe-11eb-916e-4f8a49a26a61.png)
 
+### Disable user input
+When activated the user input (i.e. clicking/touching the buttons) is disabled, which will be visualized by a different style:
+
+![Disable switch](https://user-images.githubusercontent.com/14224149/109054522-3f322400-76de-11eb-89f5-18499a88c1bf.png)
+
+Note that it is also possible to override this setting via input messages with `msg.topic="enable"` or `msg.topic="disable"`:
+
+![Disable switch flow](https://user-images.githubusercontent.com/14224149/109054012-a8656780-76dd-11eb-8abc-742627f5af95.png)
+```
+[{"id":"cef31702.c41428","type":"debug","z":"2b6f5d19.202242","name":"","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"false","statusVal":"","statusType":"auto","x":670,"y":1900,"wires":[]},{"id":"1730cdc0.2bad52","type":"ui_multistate_switch","z":"2b6f5d19.202242","name":"","group":"28a39865.fa3608","order":2,"width":"4","height":0,"label":"Thermostat","rounded":true,"useThemeColors":false,"hideSelectedLabel":false,"disableUserInput":true,"options":[{"label":"ON","value":"on","valueType":"str","color":"#009933"},{"label":"OFF","value":"off","valueType":"str","color":"#ff6666"}],"x":458,"y":1900,"wires":[["cef31702.c41428"]]},{"id":"872ba2fc.cf4fe","type":"inject","z":"2b6f5d19.202242","name":"Enable user input","props":[{"p":"topic","vt":"str"}],"repeat":"","crontab":"","once":false,"onceDelay":0.1,"topic":"enable","x":240,"y":1900,"wires":[["1730cdc0.2bad52"]]},{"id":"e3da9a3f.55d7d8","type":"inject","z":"2b6f5d19.202242","name":"Disable user input","props":[{"p":"topic","vt":"str"}],"repeat":"","crontab":"","once":false,"onceDelay":0.1,"topic":"disable","x":230,"y":1940,"wires":[["1730cdc0.2bad52"]]},{"id":"28a39865.fa3608","type":"ui_group","name":"Default","tab":"d8520920.0128d8","order":1,"disp":true,"width":"9","collapse":false},{"id":"d8520920.0128d8","type":"ui_tab","name":"Home","icon":"dashboard","disabled":false,"hidden":false}]
+```
+
 ## Example flow
 
 The following flow shows switch button with 2, 3 and 4 states:
