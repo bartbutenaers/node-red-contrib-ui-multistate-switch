@@ -33,10 +33,11 @@
             height: {value: 0},
             name: {value: ''},
             label: {value: 'switch'},
+            stateField: {value: 'payload'},
+            enableField: {value: 'enable'},
             rounded: {value: false},
             useThemeColors: {value: true},
             hideSelectedLabel: {value: false},
-            disableUserInput: {value: false},
             options: {value: []}
         },
         inputs:1,
@@ -58,6 +59,16 @@
                 this.useThemeColors = true;                
             }
             
+            // Add a state field value for older nodes (version 1.0.0)
+            if (this.stateField == undefined) {
+                this.stateField = "payload";
+            }
+
+            // Add an enable field value for older nodes (version 1.0.0)
+            if (this.enableField == undefined) {
+                this.enableField = "enable";
+            }
+
             $('#node-input-rounded').change(function () {
                 if (this.checked == true) {
                     $("#appearance-square").css('opacity',"0.4");
@@ -124,7 +135,20 @@
                     colorFields.show();
                 }
             });
+            debugger
             $("#node-input-doubleClickZoomEnabled").change();
+
+            $("#node-input-stateField").val(this.stateField);
+            $('#node-input-stateField').typedInput({
+                types: ['msg'],
+                default: 'msg'
+            });
+
+            $("#node-input-enableField").val(this.enableField);
+            $('#node-input-enableField').typedInput({
+                types: ['msg'],
+                default: 'msg'
+            });
         },
         oneditsave: function() {
             var node = this;
@@ -165,6 +189,14 @@
         <label for="node-input-label"><i class="fa fa-i-cursor"></i> Label</label>
         <input type="text" id="node-input-label">
     </div>
+    <div class="form-row">
+        <label for="node-input-stateField"><i class="fa fa-toggle-off"></i> State</label>
+        <input type="text" id="node-input-stateField" style="width:70%">
+    </div>
+    <div class="form-row">
+        <label for="node-input-enableField"><i class="fa fa-unlock-alt"></i> Enable</label>
+        <input type="text" id="node-input-enableField" style="width:70%">
+    </div>
     <div class='form-row'>
         <label for='node-input-rounded'><i class='fa fa-gear'></i> Appearance</label>        
         <span id="appearance-square" style="opacity:1; border:1px solid; padding: 3px 20px 2px 5px; "><i class="fa fa-square"></i></span>
@@ -181,11 +213,6 @@
         <input type='checkbox' id='node-input-hideSelectedLabel' style='width:auto ;border:none; vertical-align:baseline;' placeholder='0'>
         <span for='node-input-hideSelectedLabel'> Hide label of selected option</span>
     </div>
-    <div class="form-row">
-        <label for='node-input-disableUserInput'><i class='fa fa-mouse-pointer'></i> User input</label>
-        <input type='checkbox' id='node-input-disableUserInput' style='width:auto ;border:none; vertical-align:baseline;' placeholder='0'>
-        <span for='node-input-disableUserInput'> Disable user input</span>
-    </div>
     <div class="form-row" style="margin-bottom:0;">
         <label><i class="fa fa-list"></i> Options:</label>
     </div>
@@ -198,14 +225,16 @@
     <p>A Node Red node to show a switch with multiple states in the Node-RED dashboard.</p>
     <p><strong>Label:</strong><br/>
     The label that will be displayed on the left side of the button.</p>
+    <p><strong>State:</strong><br/>
+    The field in the input message that will contain the new switch state.</p>
+    <p><strong>Enable:</strong><br/>
+    The field in the input message that will contain a boolean, indicating whether the switch should be enabled or not.  Which means whether it allows user input (click/touch).</p>
     <p><strong>Appearance:</strong><br/>
     Specify whether the shape of the widget should be rectangular or having rounded corners.</p>
     <p><strong>Use theme colors:</strong><br/>
     Specify whether the theme colors should be used.  If not active, custom colors can be specified for each option separately.</p>
     <p><strong>Hide label of selected option:</strong><br/>
     Specify whether the label of the selected option should be hidden, i.e. don't need to be displayed on top of the slider.</p>
-    <p><strong>Disable user input:</strong><br/>
-    Specify whether user input (i.e. mouse clicks or finger touches) are allowed via the user interface, to move the slider to another status.</p>
     <p>Note that this option can dynamically be overridden by input messages with <code>msg.topic="enable"</code> or <code>msg.topic="disable"</code>.</p>
     <p><strong>Options:</strong><br/>
     Specify which options need to be displayed:
