@@ -36,6 +36,7 @@
             rounded: {value: false},
             useThemeColors: {value: true},
             hideSelectedLabel: {value: false},
+            disableUserInput: {value: false},
             options: {value: []}
         },
         inputs:1,
@@ -180,6 +181,11 @@
         <input type='checkbox' id='node-input-hideSelectedLabel' style='width:auto ;border:none; vertical-align:baseline;' placeholder='0'>
         <span for='node-input-hideSelectedLabel'> Hide label of selected option</span>
     </div>
+    <div class="form-row">
+        <label for='node-input-disableUserInput'><i class='fa fa-mouse-pointer'></i> User input</label>
+        <input type='checkbox' id='node-input-disableUserInput' style='width:auto ;border:none; vertical-align:baseline;' placeholder='0'>
+        <span for='node-input-disableUserInput'> Disable user input</span>
+    </div>
     <div class="form-row" style="margin-bottom:0;">
         <label><i class="fa fa-list"></i> Options:</label>
     </div>
@@ -198,6 +204,9 @@
     Specify whether the theme colors should be used.  If not active, custom colors can be specified for each option separately.</p>
     <p><strong>Hide label of selected option:</strong><br/>
     Specify whether the label of the selected option should be hidden, i.e. don't need to be displayed on top of the slider.</p>
+    <p><strong>Disable user input:</strong><br/>
+    Specify whether user input (i.e. mouse clicks or finger touches) are allowed via the user interface, to move the slider to another status.</p>
+    <p>Note that this option can dynamically be overridden by input messages with <code>msg.topic="enable"</code> or <code>msg.topic="disable"</code>.</p>
     <p><strong>Options:</strong><br/>
     Specify which options need to be displayed:
         <ul>
