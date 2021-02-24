@@ -204,14 +204,17 @@ module.exports = function(RED) {
 
                                 toggleRadioDiv.appendChild(divElement);
                             });
+                            
+                            if($scope.config.disableUserInput){
+                                disable(true);
+                            }
                         }
 
                         $scope.$watch('msg', function(msg) {
                             // Ignore undefined messages.
-                            if (!msg || msg.payload == undefined) {
+                            if (!msg) {
                                 return;
                             }
-
 
                             //temporary added here to test the disable/enable functionality                            
                             if(msg.topic === 'disable'){
@@ -222,6 +225,11 @@ module.exports = function(RED) {
                                 disable(false)
                                 return
                             }
+                            
+                            if (msg.payload == undefined) {
+                                return;
+                            }
+                            
                             // The msg.payload contains the new switch state value
                             // Note that an input message doesn't need to trigger an output message
                             switchStateChanged(msg.payload, false);
