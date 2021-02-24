@@ -44,6 +44,10 @@ module.exports = function(RED) {
                 padding-right:1em;
                 line-height: 1.4em;
             }
+            .multistate-switch-wrapper.disabled{
+                border-color:gray;
+                border-style:dashed;
+            }
             .multistate-switch-wrapper{
                 border:1px solid var(--nr-dashboard-widgetColor);
                 display: flex;
@@ -54,13 +58,21 @@ module.exports = function(RED) {
                 margin: auto 0;
                 width:100%;
             }
+            .multistate-slider-wrapper.disabled{
+                opacity:0.5;
+            }
             .multistate-slider-wrapper{
                 height: 1em;
                 padding-top: 0.25em;
                 padding-bottom: 0.25em;
                 z-index:0
             }
+            .multistate-switch-body.disabled{
+                color:gray;
+                pointer-events:none; 
+            }
             .multistate-switch-body{
+                pointer-events:auto;
                 display: inline-flex;
                 justify-content: flex-start;
                 width: 100%;
@@ -80,6 +92,10 @@ module.exports = function(RED) {
             .multistate-switch-button-${config.id}{
                 width:calc(100% / ${config.options.length}); 
             }
+            .multistate-switch-button.disabled{
+                pointer-events:none !important;
+            }
+            
             .multistate-switch-button{              
                text-align:center;
                z-index:1;
@@ -95,7 +111,7 @@ module.exports = function(RED) {
         <div class="multistate-switch-container" ng-init='init(` + configAsJson + `)'>
             <div ng-if="${config.label != ""}" class="multistate-switch-label">${config.label}</div>            
             <div id="multiStateSwitchContainer_` + config.id + `" class="multistate-switch-wrapper" ng-class="{'multistate-switch-round':(config.rounded)}">
-                <div class="multistate-switch-body">
+                <div id="multiStateSwitchBody_` + config.id + `"" class="multistate-switch-body">
                     <div id="multiStateSwitchSliderWrapper_` + config.id + `" class="multistate-slider-wrapper">
                         <div id="multiStateSwitchSlider_` + config.id + `" class="multistate-switch-slider multistate-switch-slider-` + config.id + `" ng-class="{'multistate-switch-round':(config.rounded)}"></div>
                     </div>
@@ -107,6 +123,8 @@ module.exports = function(RED) {
 
         return html;
     }
+
+    
     
     function checkConfig(node, conf) {
         if (!conf || !conf.hasOwnProperty("group")) {
@@ -193,10 +211,41 @@ module.exports = function(RED) {
                             if (!msg || msg.payload == undefined) {
                                 return;
                             }
+
+
+                            //temporary added here to test the disable/enable functionality                            
+                            if(msg.topic === 'disable'){
+                                disable(true)
+                                return
+                            }
+                            if(msg.topic === 'enable'){
+                                disable(false)
+                                return
+                            }
                             // The msg.payload contains the new switch state value
                             // Note that an input message doesn't need to trigger an output message
                             switchStateChanged(msg.payload, false);
                         });
+
+                        function disable(state){                            
+                            //true - widget disabled, false - widget enabled
+                            if(state == true){
+                                $("#multiStateSwitchContainer_"+$scope.config.id).addClass('disabled')
+                                $("#multiStateSwitchBody_"+$scope.config.id).addClass('disabled')                               
+                                $("#multiStateSwitchSliderWrapper_"+$scope.config.id).addClass('disabled')
+                                $scope.config.options.forEach(function (option, index) {
+                                        $("#mstbtn_"+$scope.config.id+"_"+index).addClass('disabled')
+                                });
+                            }
+                            else{
+                                $("#multiStateSwitchContainer_"+$scope.config.id).removeClass('disabled')
+                                $("#multiStateSwitchBody_"+$scope.config.id).removeClass('disabled')                               
+                                $("#multiStateSwitchSliderWrapper_"+$scope.config.id).removeClass('disabled')
+                                $scope.config.options.forEach(function (option, index) {
+                                    $("#mstbtn_"+$scope.config.id+"_"+index).removeClass('disabled')
+                                });
+                            }
+                        }
                                 
                         function switchStateChanged(newValue, sendMsg) {
                             
