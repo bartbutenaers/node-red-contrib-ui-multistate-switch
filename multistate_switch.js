@@ -191,11 +191,11 @@ module.exports = function(RED) {
                     },
                     beforeSend: function (msg, orig) {
                         if (orig) {
-                            msg = {}
+                            var newMsg = {};
                             // Store the switch state in the specified msg state field
-                            RED.util.setMessageProperty(msg, config.stateField, orig.msg.payload, true)
-                            orig.msg = msg
-                            return orig.msg;
+                            RED.util.setMessageProperty(newMsg, config.stateField, orig.msg.state, true)
+                            //orig.msg = newMsg;
+                            return newMsg;
                         }
                     },
                     initController: function($scope, events) {
@@ -311,7 +311,8 @@ module.exports = function(RED) {
                                 }                                
                                 
                                 if (sendMsg) {
-                                    $scope.send({payload: newValue});
+                                    $scope.send({
+                                        state: newValue});
                                 }
                             }
                             else {
