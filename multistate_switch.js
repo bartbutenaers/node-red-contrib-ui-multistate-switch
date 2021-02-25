@@ -191,6 +191,10 @@ module.exports = function(RED) {
                     },
                     beforeSend: function (msg, orig) {
                         if (orig) {
+                            msg = {}
+                            // Store the switch state in the specified msg state field
+                            RED.util.setMessageProperty(msg, config.stateField, orig.msg.payload, true)
+                            orig.msg = msg
                             return orig.msg;
                         }
                     },
