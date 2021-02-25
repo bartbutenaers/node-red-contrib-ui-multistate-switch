@@ -32,7 +32,7 @@ This node allows to show a multi-state switch in a few steps:
 It is very easy to adjust the styling of this switch widget in two ways:
 
 ### State
-Specify which field in the input message that will contain the new switch state.  By default `msg.payload` will be used.
+Specify which field in the input and output message that will contain the new switch state.  By default `msg.payload` will be used.
 
 ### Enable
 Specify which field in the input message that will contain a boolean, indicating whether the switch should be enabled or not.  Which means whether it allows user input (click/touch).  By default `msg.enable` will be used.
