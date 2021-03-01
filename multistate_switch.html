@@ -94,11 +94,13 @@
             }
 
             var optionsList = $("#node-input-options-container").css('min-height','200px').editableList({
+                
                 header: $("<div>").append($.parseHTML(
                    "<div style='width:40%; display: inline-grid'><b>Label</b></div>" +
                    "<div style='width:40%; display: inline-grid'><b>Value</b></div>" +
                    "<div style='width:10%; display: inline-grid' class='node-input-option-color'><b>Color</b></div>")),
                 addItem: function(container, i, option) {
+                    
                     // Add a new row to the editableList
                     var row = $('<div/>').appendTo(container);
                     
@@ -111,9 +113,11 @@
                     valueField.typedInput({types: ['str', 'num']});
                     valueField.typedInput("type", option.valueType || "str");
                     valueField.typedInput("value", option.value || "option_" + i);
-                    
+                                      
                     // Column 3 : Add an input field (type color) to the new row, that represents the option color
-                    var colorField = $('<input/>',{class:"node-input-option-color",type:"color"}).css({"width":"10%","margin-left":"5px"}).appendTo(row);
+                    // Before adding be sure if color field is needed to show or not.
+                    var colofield = $("#node-input-useThemeColors").prop("checked") ? "none" : "inline-block"; 
+                    var colorField = $('<input/>',{class:"node-input-option-color",type:"color"}).css({"width":"10%","margin-left":"5px","display":colofield}).appendTo(row);
                     colorField.val(option.color || getColor(i));   
                 },
                 removable: true
@@ -135,7 +139,7 @@
                     colorFields.show();
                 }
             });
-            debugger
+            
             $("#node-input-doubleClickZoomEnabled").change();
 
             $("#node-input-stateField").val(this.stateField);
