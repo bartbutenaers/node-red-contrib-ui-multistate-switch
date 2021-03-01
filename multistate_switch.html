@@ -38,7 +38,13 @@
             rounded: {value: false},
             useThemeColors: {value: true},
             hideSelectedLabel: {value: false},
-            options: {value: []}
+            options: {value: [],
+                validate:function(v) {
+                    var unique = new Set(v.map(function(o) {return o.value;}));
+                    return v.length == unique.size && v.length > 1;
+                }
+            }
+            
         },
         inputs:1,
         outputs:1,
@@ -67,6 +73,30 @@
             // Add an enable field value for older nodes (version 1.0.0)
             if (this.enableField == undefined) {
                 this.enableField = "enable";
+            }
+
+            // Validate the options to show error. 
+            // Leaving the design ideas for you - where to show and how..
+            // It also misses one thing - if currently in error situation and the user 
+            // makes any changes for options (adds new or changes any value), hide the error field immediately. 
+            // No need to show any error during the configuration. 
+            // Validation only when user closes the dialog and when it is opened.
+
+            //Using the Set to collect unique values and then comparing the count of elements. 
+            var un = new Set(this.options.map(function(o) {return o.value}));
+            if (this.options.length != un.size) {
+                console.log("configuration error - values not unique ")
+                //$("#configError").text("Some kind words about the uniqueness needed in options values")
+                //$("#configError").show();
+            }
+            else if(this.options.length < 2){
+                console.log("configuration error - at least 2 options needed")
+                //$("#configError").text("Say something nice about the config needs at least 2 opions defined")
+                //$("#configError").show();
+            }
+            else {
+                // options valid
+                //$("#configError").hide();
             }
 
             $('#node-input-rounded').change(function () {
