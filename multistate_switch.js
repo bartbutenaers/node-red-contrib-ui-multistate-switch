@@ -95,7 +95,12 @@ module.exports = function(RED) {
             .multistate-switch-button.disabled{
                 pointer-events:none !important;
             }
-            
+            .multistate-switch-button.dark{
+                color:var(--nr-dashboard-widgetBgndColor)
+            }
+            .multistate-switch-button.light{
+                color:var(--nr-dashboard-widgetTextColor)
+            }
             .multistate-switch-button{              
                text-align:center;
                z-index:1;
@@ -141,8 +146,12 @@ module.exports = function(RED) {
             var node = this;
             if(ui === undefined) {
                 ui = RED.require("node-red-dashboard")(RED);
-            }  
-            RED.nodes.createNode(this, config);
+            }
+            config.dark = false
+            if(typeof ui.isDark === "function"){
+                config.dark = ui.isDark()
+            }           
+            RED.nodes.createNode(this, config);       
 
             if (checkConfig(node, config)) { 
                 var html = HTML(config);
@@ -274,6 +283,25 @@ module.exports = function(RED) {
                                 });
                             }
                         }
+
+                        function txtClassToStandOut(bgColor, light, dark) {
+                            var color = (bgColor.charAt(0) === '#') ? bgColor.substring(1, 7) : bgColor;
+                            var r = parseInt(color.substring(0, 2), 16);
+                            var g = parseInt(color.substring(2, 4), 16);
+                            var b = parseInt(color.substring(4, 6), 16);
+                            var uicolors = [r / 255, g / 255, b / 255];
+                            var c = uicolors.map((col) => {
+                              if (col <= 0.03928) {
+                                return col / 12.92;
+                              }
+                              return Math.pow((col + 0.055) / 1.055, 2.4);
+                            });
+                            var L = (0.2126 * c[0]) + (0.7152 * c[1]) + (0.0722 * c[2]);
+                            if($scope.config.dark){
+                                return (L > 0.179) ?  dark : light;
+                            }
+                            return (L > 0.179) ?  light : dark;
+                        }
                                 
                         function switchStateChanged(newValue, sendMsg) {
                             
@@ -283,11 +311,13 @@ module.exports = function(RED) {
                             $scope.config.options.forEach(function (option, index) {                                
                                 if($("#mstbtn_"+$scope.config.id+"_"+index).length){
                                     $("#mstbtn_"+$scope.config.id+"_"+index).css({"cursor":"pointer","pointer-events":"auto"})
+                                    $("#mstbtn_"+$scope.config.id+"_"+index).removeClass("light dark")
                                 }
                                 if (option.value == newValue) {
                                     // selected button inactive 
-                                    if($("#mstbtn_"+$scope.config.id+"_"+index).length){
+                                    if($("#mstbtn_"+$scope.config.id+"_"+index).length){                                        
                                         $("#mstbtn_"+$scope.config.id+"_"+index).css({"cursor":"default","pointer-events":"none"})
+                                        $("#mstbtn_"+$scope.config.id+"_"+index).addClass(txtClassToStandOut(option.color,"light","dark"))
                                     }
                                     divIndex = index;
                                 }
