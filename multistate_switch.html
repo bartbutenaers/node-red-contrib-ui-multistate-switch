@@ -85,18 +85,18 @@
             //Using the Set to collect unique values and then comparing the count of elements. 
             var un = new Set(this.options.map(function(o) {return o.value}));
             if (this.options.length != un.size) {
-                console.log("configuration error - values not unique ")
-                //$("#configError").text("Some kind words about the uniqueness needed in options values")
-                //$("#configError").show();
+                //console.log("configuration error - values not unique ")
+                $("#configError").text("Values must be unique")
+                $("#configError").show();
             }
             else if(this.options.length < 2){
-                console.log("configuration error - at least 2 options needed")
-                //$("#configError").text("Say something nice about the config needs at least 2 opions defined")
-                //$("#configError").show();
+                //console.log("configuration error - at least 2 options needed")
+                $("#configError").text("Configure at least two options")
+                $("#configError").show();
             }
             else {
                 // options valid
-                //$("#configError").hide();
+                $("#configError").hide();
             }
 
             $('#node-input-rounded').change(function () {
@@ -143,6 +143,9 @@
                     valueField.typedInput({types: ['str', 'num']});
                     valueField.typedInput("type", option.valueType || "str");
                     valueField.typedInput("value", option.value || "option_" + i);
+                    valueField.on('change', function(type, value) {
+                        $("#configError").hide();
+                    });
                                       
                     // Column 3 : Add an input field (type color) to the new row, that represents the option color
                     // Before adding be sure if color field is needed to show or not.
@@ -204,7 +207,7 @@
     });
 </script>
 
-<script type="text/x-red" data-template-name="ui_multistate_switch">
+<script type="text/html" data-template-name="ui_multistate_switch">
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
@@ -251,11 +254,12 @@
         <label><i class="fa fa-list"></i> Options:</label>
     </div>
     <div class="form-row">
+        <span id="configError" style="color:#DD0000"><b>All Values must be unique.</b></span>
         <!-- Table with input options -->
         <ol id="node-input-options-container"></ol>
     </div>
 </script>
-<script type="text/x-red" data-help-name="ui_multistate_switch">
+<script type="text/html" data-help-name="ui_multistate_switch">
     <p>A Node Red node to show a switch with multiple states in the Node-RED dashboard.</p>
     <p><strong>Label:</strong><br/>
     The label that will be displayed on the left side of the button.</p>
