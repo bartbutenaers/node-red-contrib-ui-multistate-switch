@@ -154,7 +154,11 @@ module.exports = function(RED) {
             }           
             RED.nodes.createNode(this, config);       
 
-            if (checkConfig(node, config)) { 
+            if (checkConfig(node, config)) {
+		// Add default values to older nodes (version 1.0.0)
+                config.stateField = config.stateField || 'payload';
+                config.enableField = config.enableField || 'enable';
+            
                 var html = HTML(config);
                 var done = ui.addWidget({
                     node: node,
