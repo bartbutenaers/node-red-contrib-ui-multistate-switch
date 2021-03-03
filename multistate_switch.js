@@ -43,6 +43,7 @@ module.exports = function(RED) {
             .multistate-switch-label{
                 padding-right:1em;
                 line-height: 1.4em;
+                white-space: nowrap;
             }
             .multistate-switch-wrapper.disabled{
                 border-color:gray;
@@ -297,10 +298,11 @@ module.exports = function(RED) {
                               return Math.pow((col + 0.055) / 1.055, 2.4);
                             });
                             var L = (0.2126 * c[0]) + (0.7152 * c[1]) + (0.0722 * c[2]);
+                            
                             if($scope.config.dark){
-                                return (L > 0.179) ?  dark : light;
+                                return (L > 0.5) ?  dark : light;
                             }
-                            return (L > 0.179) ?  light : dark;
+                            return (L > 0.27) ?  light : dark;
                         }
                                 
                         function switchStateChanged(newValue, sendMsg) {
