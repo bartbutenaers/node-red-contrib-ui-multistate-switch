@@ -324,7 +324,7 @@ module.exports = function(RED) {
                                     // selected button inactive 
                                     if($("#mstbtn_"+$scope.config.id+"_"+index).length){                                        
                                         $("#mstbtn_"+$scope.config.id+"_"+index).css({"cursor":"default","pointer-events":"none"})
-                                        $("#mstbtn_"+$scope.config.id+"_"+index).addClass(txtClassToStandOut(option.color||config.defaultTextColor ,"light","dark"))
+                                        $("#mstbtn_"+$scope.config.id+"_"+index).addClass(txtClassToStandOut(option.color||$scope.config.defaultTextColor ,"light","dark"))
                                     }
                                     divIndex = index;
                                 }
