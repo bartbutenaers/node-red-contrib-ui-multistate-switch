@@ -151,7 +151,7 @@ module.exports = function(RED) {
             config.dark = false
             if(typeof ui.isDark === "function"){
                 config.dark = ui.isDark()
-                config.defaultTextColor = ui.getTheme()['widget-textColor'].value          
+                config.widgetColor = ui.getTheme()['widget-backgroundColor'].value          
             }           
             RED.nodes.createNode(this, config);       
 
@@ -324,7 +324,7 @@ module.exports = function(RED) {
                                     // selected button inactive 
                                     if($("#mstbtn_"+$scope.config.id+"_"+index).length){                                        
                                         $("#mstbtn_"+$scope.config.id+"_"+index).css({"cursor":"default","pointer-events":"none"})
-                                        $("#mstbtn_"+$scope.config.id+"_"+index).addClass(txtClassToStandOut(option.color||$scope.config.defaultTextColor ,"light","dark"))
+                                        $("#mstbtn_"+$scope.config.id+"_"+index).addClass(txtClassToStandOut(option.color||$scope.config.widgetColor,"light","dark"))
                                     }
                                     divIndex = index;
                                 }
