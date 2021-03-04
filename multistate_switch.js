@@ -109,6 +109,7 @@ module.exports = function(RED) {
                user-select:none;
                cursor:pointer;
                line-height: 1.4em;
+               transition: color 0.5s ease;
             }
             .multistate-switch-round{
                 border-radius: 1em;
@@ -234,11 +235,6 @@ module.exports = function(RED) {
 
                             // Create all the required  button elements
                             config.options.forEach(function (option, index) {
-                                if (index === 0) {
-                                    // Make sure the initial element gets the correct color
-                                    switchStateChanged(option.value, false);
-                                }
-                                
                                 var divElement = document.createElement("div");
                                 divElement.setAttribute("class", "multistate-switch-button multistate-switch-button-"+config.id);
                                 divElement.setAttribute("id", "mstbtn_"+config.id+"_"+index)
@@ -249,6 +245,8 @@ module.exports = function(RED) {
 
                                 toggleRadioDiv.appendChild(divElement);
                             });
+                            // Make sure the initial element gets the correct color
+                            switchStateChanged(config.options[0].value, false);
                         }
 
                         $scope.$watch('msg', function(msg) {
@@ -277,7 +275,7 @@ module.exports = function(RED) {
                                 $("#multiStateSwitchBody_"+$scope.config.id).addClass('disabled')                               
                                 $("#multiStateSwitchSliderWrapper_"+$scope.config.id).addClass('disabled')
                                 $scope.config.options.forEach(function (option, index) {
-                                        $("#mstbtn_"+$scope.config.id+"_"+index).addClass('disabled')
+                                    $("#mstbtn_"+$scope.config.id+"_"+index).addClass('disabled')
                                 });
                             }
                             else{
@@ -302,12 +300,11 @@ module.exports = function(RED) {
                               }
                               return Math.pow((col + 0.055) / 1.055, 2.4);
                             });
-                            var L = (0.2126 * c[0]) + (0.7152 * c[1]) + (0.0722 * c[2]);
-                            
+                            var L = (0.2126 * c[0]) + (0.7152 * c[1]) + (0.0722 * c[2]);                           
                             if($scope.config.dark){
-                                return (L > 0.5) ?  dark : light;
+                                return (L > 0.35) ?  dark : light;
                             }
-                            return (L > 0.27) ?  light : dark;
+                            return (L > 0.35) ?  light : dark;
                         }
                                 
                         function switchStateChanged(newValue, sendMsg) {
@@ -315,19 +312,20 @@ module.exports = function(RED) {
                             var divIndex = -1;
                             // Try to find an option with a value identical to the specified value
                             // For every button be sure that button exists and change mouse cursor and pointer-events
-                            $scope.config.options.forEach(function (option, index) {                                
-                                if($("#mstbtn_"+$scope.config.id+"_"+index).length){
+                            $scope.config.options.forEach(function (option, index) {
+                                if($("#mstbtn_"+$scope.config.id+"_"+index).length){                                    
                                     $("#mstbtn_"+$scope.config.id+"_"+index).css({"cursor":"pointer","pointer-events":"auto"})
                                     $("#mstbtn_"+$scope.config.id+"_"+index).removeClass("light dark")
-                                }
-                                if (option.value == newValue) {
-                                    // selected button inactive 
-                                    if($("#mstbtn_"+$scope.config.id+"_"+index).length){                                        
+                                    if (option.value == newValue) {
+                                        // selected button inactive                                                                                                                     
                                         $("#mstbtn_"+$scope.config.id+"_"+index).css({"cursor":"default","pointer-events":"none"})
-                                        $("#mstbtn_"+$scope.config.id+"_"+index).addClass(txtClassToStandOut(option.color||$scope.config.widgetColor,"light","dark"))
+                                        // ensure the button text stand out
+                                        var color = $scope.config.useThemeColors ? $scope.config.widgetColor : option.color ? option.color : $scope.config.widgetColor                                        
+                                        $("#mstbtn_"+$scope.config.id+"_"+index).addClass(txtClassToStandOut(color,"light","dark"))
+                                        
+                                        divIndex = index;
                                     }
-                                    divIndex = index;
-                                }
+                                }                               
                             });
 
                             if (divIndex >= 0) {
