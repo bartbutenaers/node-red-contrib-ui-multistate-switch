@@ -30,7 +30,7 @@
                     $("#node-input-size").toggleClass("input-error",!valid);
                     return valid;
                 }},
-            height: {value: 0},
+            height: {value: 1},
             name: {value: ''},
             label: {value: 'switch'},
             stateField: {value: 'payload'},
@@ -82,22 +82,8 @@
             // No need to show any error during the configuration. 
             // Validation only when user closes the dialog and when it is opened.
 
-            //Using the Set to collect unique values and then comparing the count of elements. 
-            var un = new Set(this.options.map(function(o) {return o.value}));
-            if (this.options.length != un.size) {
-                //console.log("configuration error - values not unique ")
-                $("#configError").text("Values must be unique")
-                $("#configError").show();
-            }
-            else if(this.options.length < 2){
-                //console.log("configuration error - at least 2 options needed")
-                $("#configError").text("Configure at least two options")
-                $("#configError").show();
-            }
-            else {
-                // options valid
-                $("#configError").hide();
-            }
+            
+            
 
             $('#node-input-rounded').change(function () {
                 if (this.checked == true) {
@@ -110,6 +96,7 @@
             })
             $("#node-input-size").elementSizer({
                 width: "#node-input-width",
+                height: "#node-input-height",
                 group: "#node-input-group"
             });
             
@@ -144,14 +131,18 @@
                     valueField.typedInput("type", option.valueType || "str");
                     valueField.typedInput("value", option.value || "option_" + i);
                     valueField.on('change', function(type, value) {
-                        $("#configError").hide();
-                    });
+                        validate()
+                    });                    
                                       
                     // Column 3 : Add an input field (type color) to the new row, that represents the option color
                     // Before adding be sure if color field is needed to show or not.
                     var colofield = $("#node-input-useThemeColors").prop("checked") ? "none" : "inline-block"; 
                     var colorField = $('<input/>',{class:"node-input-option-color",type:"color"}).css({"width":"10%","margin-left":"5px","display":colofield}).appendTo(row);
-                    colorField.val(option.color || getColor(i));   
+                    colorField.val(option.color || getColor(i)); 
+                    validate()                  
+                },
+                removeItem: function(data) {
+                    validate()
                 },
                 removable: true
             });
@@ -186,6 +177,42 @@
                 types: ['msg'],
                 default: 'msg'
             });
+
+            function validate(){
+                var that = this
+                // Copy all the options from the editableList to this node
+                this.options = [];
+                var optionsList = $("#node-input-options-container").editableList('items');
+                optionsList.each(function(i) {
+                    var option    = $(this);
+                    var label     = option.find(".node-input-option-label").val();
+                    var value     = option.find(".node-input-option-value").typedInput('value');
+                    var valueType = option.find(".node-input-option-value").typedInput('type');
+                    var color     = option.find(".node-input-option-color").val();                    
+                    that.options.push({label:label, value:value, valueType:valueType, color:color});
+                });
+
+                //Using the Set to collect unique values and then comparing the count of elements. 
+                var un = new Set(this.options.map(function(o) {return o.value}));
+                if (this.options.length != un.size) {
+                    //console.log("configuration error - values not unique ")
+                    $("#configError").text("Values must be unique")
+                    $("#configError").show();
+                }
+                else if(this.options.length < 2){
+                    //console.log("configuration error - at least 2 options needed")
+                    $("#configError").text("Configure at least two options")
+                    $("#configError").show();
+                }
+                else {
+                    // options valid
+                    $("#configError").hide();
+                }
+            }
+            if(this.options){
+                validate();
+            }
+           
         },
         oneditsave: function() {
             var node = this;
@@ -252,9 +279,9 @@
     </div>
     <div class="form-row" style="margin-bottom:0;">
         <label><i class="fa fa-list"></i> Options:</label>
-    </div>
-    <div class="form-row">
         <span id="configError" style="color:#DD0000"><b>All Values must be unique.</b></span>
+    </div>
+    <div class="form-row">       
         <!-- Table with input options -->
         <ol id="node-input-options-container"></ol>
     </div>
