@@ -38,6 +38,7 @@
             rounded: {value: false},
             useThemeColors: {value: true},
             hideSelectedLabel: {value: false},
+            multilineLabel:{value:false},
             options: {value: [],
                 validate:function(v) {
                     var unique = new Set(v.map(function(o) {return o.value;}));
@@ -59,6 +60,10 @@
             if (this.rounded == undefined) {
                 this.rounded = false                
             }
+            // Add a default multilineLabel to older nodes (version 1.0.0)
+            if (this.multilineLabel == undefined) {
+                this.multilineLabel = false                
+            }
 
             // Add theme colors by default for older nodes (version 1.0.0)
             if (this.useThemeColors == undefined) {
@@ -74,15 +79,6 @@
             if (this.enableField == undefined) {
                 this.enableField = "enable";
             }
-
-            // Validate the options to show error. 
-            // Leaving the design ideas for you - where to show and how..
-            // It also misses one thing - if currently in error situation and the user 
-            // makes any changes for options (adds new or changes any value), hide the error field immediately. 
-            // No need to show any error during the configuration. 
-            // Validation only when user closes the dialog and when it is opened.
-
-            
             
 
             $('#node-input-rounded').change(function () {
@@ -178,6 +174,9 @@
                 default: 'msg'
             });
 
+            // Validate the options to (choose and) show configuration error if any. 
+            // Any changes for options (adds new or changes any value), calls validation. 
+
             function validate(){
                 var that = this
                 // Copy all the options from the editableList to this node
@@ -266,6 +265,8 @@
         <span id="appearance-square" style="opacity:1; border:1px solid; padding: 3px 20px 2px 5px; "><i class="fa fa-square"></i></span>
         <input type="checkbox" id="node-input-rounded" style="display:inline-block; width:auto; vertical-align:baseline; margin-right:5px; margin-left:5px;">
         <span id="appearance-round" style="opacity:1; border:1px solid; border-radius:15px; padding: 3px 20px 2px 5px; "><i class="fa fa-circle"></i></span>
+        <label for='node-input-multilineLabel'  style="padding-left:10px; width:unset;"><i class='fa fa-align-left'></i> Multiline label</label> 
+        <input type="checkbox" id="node-input-multilineLabel" style="display:inline-block; width:auto; vertical-align:baseline; margin-right:5px; margin-left:5px;">       
     </div> 
     <div class="form-row">
         <label for='node-input-useThemeColors'><i class='fa fa-paint-brush'></i> Colors</label>
@@ -306,6 +307,6 @@
         <ul>
             <li><i>Label: </i>The description that will be displayed.</li>
             <li><i>Value: </i>The value that will be send in input and output messages.</li>
-            <li><i>Value: </i>The color of the option in the switch.</li>
+            <li><i>Color: </i>The color of the option in the switch.</li>
         </ul></p>
 </script>
