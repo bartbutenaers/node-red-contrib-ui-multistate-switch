@@ -108,7 +108,7 @@
 
             var optionsList = $("#node-input-options-container").css('min-height','200px').editableList({
                 
-                header: $("<div>").append($.parseHTML(
+                header: $("<div>").css('padding-left','32px').append($.parseHTML(
                    "<div style='width:40%; display: inline-grid'><b>Label</b></div>" +
                    "<div style='width:40%; display: inline-grid'><b>Value</b></div>" +
                    "<div style='width:10%; display: inline-grid' class='node-input-option-color'><b>Color</b></div>")),
@@ -140,7 +140,8 @@
                 removeItem: function(data) {
                     validate()
                 },
-                removable: true
+                removable: true,
+                sortable:true
             });
             
             // Show all the options (stored in this node) into the editableList
