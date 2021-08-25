@@ -16,13 +16,12 @@
 
 module.exports = function(RED) {
     var settings = RED.settings;
+    const mustache = require("mustache");
 
     function HTML(config) { 
         // Replace the dots in the id (by underscores), because we use it in element identifiers.
         // And then dots are not allowed, because otherwise you cannot find the element by id!
-        config.id = config.id.replace(".", "_");
-        
-        // Add a default rounding of 0em to older nodes (version 1.0.0)        
+        config.id = config.id.replace(".", "_");      
     
         // The configuration is a Javascript object, which needs to be converted to a JSON string
         var configAsJson = JSON.stringify(config);
@@ -109,14 +108,13 @@ module.exports = function(RED) {
                user-select:none;
                cursor:pointer;
                line-height: 1.4em;
-               transition: color 0.5s ease;
             }
             .multistate-switch-round{
                 border-radius: 1em;
             }
         </style>
         <div class="multistate-switch-container" ng-init='init(` + configAsJson + `)'>
-            <div ng-if="${config.label != ""}" class="multistate-switch-label">${config.label}</div>            
+            <div ng-if="${config.label != ""}" id="multiStateSwitchLabel_` + config.id + `" class="multistate-switch-label">${config.label}</div>            
             <div id="multiStateSwitchContainer_` + config.id + `" class="multistate-switch-wrapper" ng-class="{'multistate-switch-round':(config.rounded)}">
                 <div id="multiStateSwitchBody_` + config.id + `"" class="multistate-switch-body">
                     <div id="multiStateSwitchSliderWrapper_` + config.id + `" class="multistate-slider-wrapper">
@@ -152,12 +150,11 @@ module.exports = function(RED) {
             config.dark = false
             if(typeof ui.isDark === "function"){
                 config.dark = ui.isDark()
-                config.widgetColor = ui.getTheme()['widget-backgroundColor'].value          
             }           
             RED.nodes.createNode(this, config);       
 
-            if (checkConfig(node, config)) {
-		// Add default values to older nodes (version 1.0.0)
+            if (checkConfig(node, config)) { 
+                // Add default values to older nodes (version 1.0.0)
                 config.stateField = config.stateField || 'payload';
                 config.enableField = config.enableField || 'enable';
             
@@ -201,6 +198,9 @@ module.exports = function(RED) {
                             catch(err) {
                                 // No problem because the enable value is optional ...
                             }
+                            
+                            // The label can contain a mustache expression, so resolve it (based on the input message content)
+                            newMsg.label = mustache.render(config.label, msg);
                         }
 
                         return { msg: newMsg };
@@ -235,6 +235,11 @@ module.exports = function(RED) {
 
                             // Create all the required  button elements
                             config.options.forEach(function (option, index) {
+                                if (index === 0) {
+                                    // Make sure the initial element gets the correct color
+                                    switchStateChanged(option.value, false);
+                                }
+                                
                                 var divElement = document.createElement("div");
                                 divElement.setAttribute("class", "multistate-switch-button multistate-switch-button-"+config.id);
                                 divElement.setAttribute("id", "mstbtn_"+config.id+"_"+index)
@@ -245,8 +250,6 @@ module.exports = function(RED) {
 
                                 toggleRadioDiv.appendChild(divElement);
                             });
-                            // Make sure the initial element gets the correct color
-                            switchStateChanged(config.options[0].value, false);
                         }
 
                         $scope.$watch('msg', function(msg) {
@@ -266,6 +269,11 @@ module.exports = function(RED) {
                                 // Note that an input message doesn't need to trigger an output message
                                 switchStateChanged(msg.state, false);
                             }
+
+                            if (msg.label != undefined) {
+                                // When a label is passed, then show it
+                                $("#multiStateSwitchLabel_" + $scope.config.id).html(msg.label);
+                            }
                         });
 
                         function disable(state){                            
@@ -275,7 +283,7 @@ module.exports = function(RED) {
                                 $("#multiStateSwitchBody_"+$scope.config.id).addClass('disabled')                               
                                 $("#multiStateSwitchSliderWrapper_"+$scope.config.id).addClass('disabled')
                                 $scope.config.options.forEach(function (option, index) {
-                                    $("#mstbtn_"+$scope.config.id+"_"+index).addClass('disabled')
+                                        $("#mstbtn_"+$scope.config.id+"_"+index).addClass('disabled')
                                 });
                             }
                             else{
@@ -300,11 +308,12 @@ module.exports = function(RED) {
                               }
                               return Math.pow((col + 0.055) / 1.055, 2.4);
                             });
-                            var L = (0.2126 * c[0]) + (0.7152 * c[1]) + (0.0722 * c[2]);                           
+                            var L = (0.2126 * c[0]) + (0.7152 * c[1]) + (0.0722 * c[2]);
+                            
                             if($scope.config.dark){
-                                return (L > 0.35) ?  dark : light;
+                                return (L > 0.5) ?  dark : light;
                             }
-                            return (L > 0.35) ?  light : dark;
+                            return (L > 0.27) ?  light : dark;
                         }
                                 
                         function switchStateChanged(newValue, sendMsg) {
@@ -312,20 +321,19 @@ module.exports = function(RED) {
                             var divIndex = -1;
                             // Try to find an option with a value identical to the specified value
                             // For every button be sure that button exists and change mouse cursor and pointer-events
-                            $scope.config.options.forEach(function (option, index) {
-                                if($("#mstbtn_"+$scope.config.id+"_"+index).length){                                    
+                            $scope.config.options.forEach(function (option, index) {                                
+                                if($("#mstbtn_"+$scope.config.id+"_"+index).length){
                                     $("#mstbtn_"+$scope.config.id+"_"+index).css({"cursor":"pointer","pointer-events":"auto"})
                                     $("#mstbtn_"+$scope.config.id+"_"+index).removeClass("light dark")
-                                    if (option.value == newValue) {
-                                        // selected button inactive                                                                                                                     
+                                }
+                                if (option.value == newValue) {
+                                    // selected button inactive 
+                                    if($("#mstbtn_"+$scope.config.id+"_"+index).length){
                                         $("#mstbtn_"+$scope.config.id+"_"+index).css({"cursor":"default","pointer-events":"none"})
-                                        // ensure the button text stand out
-                                        var color = $scope.config.useThemeColors ? $scope.config.widgetColor : option.color ? option.color : $scope.config.widgetColor                                        
-                                        $("#mstbtn_"+$scope.config.id+"_"+index).addClass(txtClassToStandOut(color,"light","dark"))
-                                        
-                                        divIndex = index;
+                                        $("#mstbtn_"+$scope.config.id+"_"+index).addClass(txtClassToStandOut(option.color,"light","dark"))
                                     }
-                                }                               
+                                    divIndex = index;
+                                }
                             });
 
                             if (divIndex >= 0) {
