@@ -44,6 +44,9 @@ module.exports = function(RED) {
                 line-height: 1.4em;
                 white-space: nowrap;
             }
+            .multiline-label{
+                white-space: normal;
+            }
             .multistate-switch-wrapper.disabled{
                 border-color:gray;
                 border-style:dashed;
@@ -114,7 +117,7 @@ module.exports = function(RED) {
             }
         </style>
         <div class="multistate-switch-container" ng-init='init(` + configAsJson + `)'>
-            <div ng-if="${config.label != ""}" id="multiStateSwitchLabel_` + config.id + `" class="multistate-switch-label">${config.label}</div>            
+            <div ng-if="${config.label != ""}" id="multiStateSwitchLabel_` + config.id + `" class="multistate-switch-label" ng-class="{'multiline-label':(config.multilineLabel)}">${config.label}</div>            
             <div id="multiStateSwitchContainer_` + config.id + `" class="multistate-switch-wrapper" ng-class="{'multistate-switch-round':(config.rounded)}">
                 <div id="multiStateSwitchBody_` + config.id + `"" class="multistate-switch-body">
                     <div id="multiStateSwitchSliderWrapper_` + config.id + `" class="multistate-slider-wrapper">
