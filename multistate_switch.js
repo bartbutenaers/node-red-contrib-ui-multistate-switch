@@ -39,7 +39,9 @@ module.exports = function(RED) {
                 width:100%;
                 margin:auto;
             }
-           
+            .multistate-switch-container path{
+                fill:currentColor !Important;
+            }           
             .multistate-switch-label{
                 padding-right:1em;
                 line-height: 1.4em;
