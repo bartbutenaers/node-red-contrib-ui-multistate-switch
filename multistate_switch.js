@@ -34,11 +34,12 @@ module.exports = function(RED) {
         //   That gives you oportunity to use straight percentages for positions (0%, 33%, 66%) (0%, 25%, 50%, 75%)
         var html = String.raw`
         <style>
-            .multistate-switch-container{
+                        .multistate-switch-container{
                 display:flex;
                 width:100%;
                 margin:auto;
             }
+           
             .multistate-switch-label{
                 padding-right:1em;
                 line-height: 1.4em;
@@ -116,6 +117,35 @@ module.exports = function(RED) {
             .multistate-switch-round{
                 border-radius: 1em;
             }
+            .mss-ripple {
+                position: relative;
+                overflow: hidden;
+                transform: translate3d(0, 0, 0);               
+            }
+            .mms-ripple-rounded{
+                border-radius:1em;
+            }                
+            .mss-ripple:after {
+              content: "";
+              display: block;
+              position: absolute;
+              width: 100%;
+              height: 100%;
+              top: 0;
+              left: 0;
+              pointer-events: none;
+              background-image: radial-gradient(circle, ${config.rippleColor} 10%, transparent 10.01%);
+              background-repeat: no-repeat;
+              background-position: 50%;
+              transform: scale(10,10);
+              opacity: 0;
+              transition: transform .5s, opacity 1s;
+            }          
+            .mss-ripple:active:after {
+              transform: scale(0,0);
+              opacity: .2;
+              transition: 0s;
+            }
         </style>
         <div class="multistate-switch-container" ng-init='init(` + configAsJson + `)'>
             <div ng-if="${config.label != ""}" id="multiStateSwitchLabel_` + config.id + `" class="multistate-switch-label" ng-class="{'multistate-switch-label-multiline':(config.multilineLabel)}">${config.label}</div>            
@@ -154,7 +184,8 @@ module.exports = function(RED) {
             config.dark = false
             if(typeof ui.isDark === "function"){
                 config.dark = ui.isDark()
-            }           
+            }
+            config.rippleColor = config.dark ? "#FFF" : "#000";           
             RED.nodes.createNode(this, config);       
 
             if (checkConfig(node, config)) { 
@@ -224,6 +255,8 @@ module.exports = function(RED) {
                         $scope.init = function (config) {
                             $scope.config = config;
 
+
+                           
                             $scope.containerDiv = $("#multiStateSwitchContainer_" + config.id)[0];
                             $scope.sliderDivElement = $("#multiStateSwitchSlider_" + config.id)[0];
                             $scope.sliderWrapperElement = $("#multiStateSwitchSliderWrapper_" + config.id)[0];
@@ -245,7 +278,13 @@ module.exports = function(RED) {
                                 }
                                 
                                 var divElement = document.createElement("div");
-                                divElement.setAttribute("class", "multistate-switch-button multistate-switch-button-"+config.id);
+                                if($scope.config.rounded){
+                                    divElement.setAttribute("class", "multistate-switch-button mss-ripple mms-ripple-rounded multistate-switch-button-"+config.id );
+                                }
+                                else{
+                                    divElement.setAttribute("class", "multistate-switch-button mss-ripple multistate-switch-button-"+config.id );
+                                }
+                                
                                 divElement.setAttribute("id", "mstbtn_"+config.id+"_"+index)
                                 divElement.innerHTML = option.label;
                                 divElement.addEventListener("click",  function() {
