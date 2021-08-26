@@ -21,7 +21,8 @@ module.exports = function(RED) {
     function HTML(config) { 
         // Replace the dots in the id (by underscores), because we use it in element identifiers.
         // And then dots are not allowed, because otherwise you cannot find the element by id!
-        config.id = config.id.replace(".", "_");      
+        config.id = config.id.replace(".", "_");     
+        console.log(config) 
     
         // The configuration is a Javascript object, which needs to be converted to a JSON string
         var configAsJson = JSON.stringify(config);
@@ -34,7 +35,7 @@ module.exports = function(RED) {
         //   That gives you oportunity to use straight percentages for positions (0%, 33%, 66%) (0%, 25%, 50%, 75%)
         var html = String.raw`
         <style>
-                        .multistate-switch-container{
+            .multistate-switch-container{
                 display:flex;
                 width:100%;
                 margin:auto;
@@ -117,15 +118,13 @@ module.exports = function(RED) {
             .multistate-switch-round{
                 border-radius: 1em;
             }
-            .mss-ripple {
+            .mss-ripple-${config.id} {
                 position: relative;
                 overflow: hidden;
-                transform: translate3d(0, 0, 0);               
-            }
-            .mms-ripple-rounded{
-                border-radius:1em;
-            }                
-            .mss-ripple:after {
+                transform: translate3d(0, 0, 0);
+                border-radius:${config.ripple.round}em;               
+            }                        
+            .mss-ripple-${config.id}:after {
               content: "";
               display: block;
               position: absolute;
@@ -134,14 +133,14 @@ module.exports = function(RED) {
               top: 0;
               left: 0;
               pointer-events: none;
-              background-image: radial-gradient(circle, ${config.rippleColor} 10%, transparent 10.01%);
+              background-image: radial-gradient(circle, ${config.ripple.color} 10%, transparent 10.01%);
               background-repeat: no-repeat;
               background-position: 50%;
               transform: scale(10,10);
               opacity: 0;
               transition: transform .5s, opacity 1s;
             }          
-            .mss-ripple:active:after {
+            .mss-ripple-${config.id}:active:after {
               transform: scale(0,0);
               opacity: .2;
               transition: 0s;
@@ -185,7 +184,10 @@ module.exports = function(RED) {
             if(typeof ui.isDark === "function"){
                 config.dark = ui.isDark()
             }
-            config.rippleColor = config.dark ? "#FFF" : "#000";           
+            config.ripple = {
+                color:config.dark ? "#FFF" : "#000",
+                round:config.rounded ? 1 : 0
+            }           
             RED.nodes.createNode(this, config);       
 
             if (checkConfig(node, config)) { 
@@ -278,13 +280,7 @@ module.exports = function(RED) {
                                 }
                                 
                                 var divElement = document.createElement("div");
-                                if($scope.config.rounded){
-                                    divElement.setAttribute("class", "multistate-switch-button mss-ripple mms-ripple-rounded multistate-switch-button-"+config.id );
-                                }
-                                else{
-                                    divElement.setAttribute("class", "multistate-switch-button mss-ripple multistate-switch-button-"+config.id );
-                                }
-                                
+                                divElement.setAttribute("class", "multistate-switch-button mss-ripple-"+config.id+" multistate-switch-button-"+config.id );
                                 divElement.setAttribute("id", "mstbtn_"+config.id+"_"+index)
                                 divElement.innerHTML = option.label;
                                 divElement.addEventListener("click",  function() {
