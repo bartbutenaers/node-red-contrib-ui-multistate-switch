@@ -21,8 +21,7 @@ module.exports = function(RED) {
     function HTML(config) { 
         // Replace the dots in the id (by underscores), because we use it in element identifiers.
         // And then dots are not allowed, because otherwise you cannot find the element by id!
-        config.id = config.id.replace(".", "_");     
-        console.log(config) 
+        config.id = config.id.replace(".", "_");
     
         // The configuration is a Javascript object, which needs to be converted to a JSON string
         var configAsJson = JSON.stringify(config);
