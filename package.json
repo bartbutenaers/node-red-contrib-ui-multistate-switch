@@ -6,7 +6,7 @@
         "name": "Bart Butenaers"
     },
     "license": "Apache-2.0",
-    "dependencies":{
+    "dependencies": {
         "mustache": "^4.2.0"
     },
     "keywords": [
@@ -16,7 +16,8 @@
         "multi",
         "state"
     ],
-    "contributors": [{
+    "contributors": [
+        {
             "name": "hotnipi",
             "url": "https://github.com/hotNipi"
         }
