@@ -6,9 +6,9 @@
         "name": "Bart Butenaers"
     },
     "license": "Apache-2.0",
-    "dependencies": [
-        "mustache": "4.2.0"
-    ],
+    "dependencies":{
+        "mustache": "^4.2.0"
+    },
     "keywords": [
         "node-red",
         "dashboard",
