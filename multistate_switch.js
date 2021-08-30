@@ -41,7 +41,7 @@ module.exports = function(RED) {
             }
             .multistate-switch-container path{
                 fill:currentColor !Important;
-            }           
+            }
             .multistate-switch-label{
                 padding-right:1em;
                 line-height: 1.4em;
@@ -188,7 +188,7 @@ module.exports = function(RED) {
             config.ripple = {
                 color:config.dark ? "#FFF" : "#000",
                 round:config.rounded ? 1 : 0
-            }           
+            }
             RED.nodes.createNode(this, config);       
 
             if (checkConfig(node, config)) { 
@@ -213,7 +213,7 @@ module.exports = function(RED) {
                     },
                     beforeEmit: function(msg, value) {   
                         var newMsg = {};
-                    
+
                         if (msg) {
                             // Copy the socket id from the original input message. 
                             newMsg.socketid = msg.socketid;
@@ -240,6 +240,26 @@ module.exports = function(RED) {
                             // The label can contain a mustache expression, so resolve it (based on the input message content)
                             newMsg.label = mustache.render(config.label, msg);
                         }
+                        
+                        // Determine whether the input message should be passed through to the output.
+                        // Note that there can't be pass through when input messages are rejected (inputMsg is 'none').
+                        // So we need to take into account here that those messages will get rejected on the client side watch!
+                        if (config.inputMsg != "none") {
+                            switch (config.passThrough) {
+                                case "always":
+                                    node.send(msg);
+                                    break;
+                                case "change":
+                                    // TODO check for valid state value...
+                                    if (this.currentSwitchState != newMsg.state) {
+                                        node.send(msg);
+                                    }
+                                    break;
+                                case "none":
+                                    // No pass through
+                                    break;
+                            }
+                        }
 
                         return { msg: newMsg };
                     },
@@ -249,6 +269,16 @@ module.exports = function(RED) {
                             // Store the switch state in the specified msg state field
                             RED.util.setMessageProperty(newMsg, config.stateField, orig.msg.state, true)
                             //orig.msg = newMsg;
+                            
+                            this.currentSwitchState = orig.msg.state;
+                            
+                            // Don't send the message to the output, if that is specified in the original message
+                            // See https://discourse.nodered.org/t/getting-errors-to-the-server-side-in-ui-node/24999/5?u=bartbutenaers
+                            if (!orig.msg.sendOutputMsg) {
+                                orig["_fromInput"] = true; // Legacy code for older dashboard versions
+                                orig["_dontSend"] = true;
+                            }
+
                             return newMsg;
                         }
                     },
@@ -258,8 +288,6 @@ module.exports = function(RED) {
                         $scope.init = function (config) {
                             $scope.config = config;
 
-
-                           
                             $scope.containerDiv = $("#multiStateSwitchContainer_" + config.id)[0];
                             $scope.sliderDivElement = $("#multiStateSwitchSlider_" + config.id)[0];
                             $scope.sliderWrapperElement = $("#multiStateSwitchSliderWrapper_" + config.id)[0];
@@ -272,12 +300,14 @@ module.exports = function(RED) {
 
                             // Get a reference to the sub-DIV element
                             var toggleRadioDiv = $scope.containerDiv.firstElementChild;
+                            
+                            $scope.previousSelectedDivIndex = -1;
 
                             // Create all the required  button elements
                             config.options.forEach(function (option, index) {
                                 if (index === 0) {
                                     // Make sure the initial element gets the correct color
-                                    switchStateChanged(option.value, false);
+                                    switchStateChanged(option.value, false, false, true);
                                 }
                                 
                                 var divElement = document.createElement("div");
@@ -285,17 +315,40 @@ module.exports = function(RED) {
                                 divElement.setAttribute("id", "mstbtn_"+config.id+"_"+index)
                                 divElement.innerHTML = option.label;
                                 divElement.addEventListener("click",  function() {
-                                    switchStateChanged(option.value, true);
+                                    switchStateChanged(option.value, true, true, true);
                                 });
 
                                 toggleRadioDiv.appendChild(divElement);
                             });
+                            
+                            // Disable the switch, when no user input is allowed
+                            if (config.userInput == "none") {
+                                disable(true);
+                            }
                         }
 
                         $scope.$watch('msg', function(msg) {
                             // Ignore undefined messages.
                             if (!msg) {
                                 return;
+                            }
+debugger;
+                            // When input messages need to be ignored, this is (unfortunately) not possible on server side of UI nodes.
+                            // Which means to messages will be emitted to the client, and we will reject them here...
+                            // See https://discourse.nodered.org/t/validate-input-message-in-ui-node/11393/8?u=bartbutenaers
+                            if ($scope.config.inputMsg == "none") {
+                                return;
+                            }
+                            
+                            // When the user changes the switch position, then a message will be sent containing the new state.
+                            // Immediately afterwards that message will be replayed and arrive here.  However when we don't visualize
+                            // the new state, then the replayed message would cause the new state to be visualized anyway.  Therefore
+                            // replayed messages from the same session will be ignored.
+                            // Caution: only apply this for type 'invisible', otherwise there is no sync anymore (between dashboards or after refresh).
+                            if ($scope.config.userInput == "invisible") {
+                                if (msg.originId == $scope.config.id) {
+                                    return;
+                                }
                             }
 
                             //temporary added here to test the disable/enable functionality                            
@@ -305,9 +358,13 @@ module.exports = function(RED) {
                             }
     
                             if (msg.state != undefined) {
+                                // When a new message arrives that sets a new state, then that state needs to be send to the server (to have the
+                                // latest state on the server).  However when a replayed message arrives, then it has to use to send it the server again.
+                                var syncToServer = (msg.originId != $scope.config.id);
+                                
                                 // The msg.payload contains the new switch state value
                                 // Note that an input message doesn't need to trigger an output message
-                                switchStateChanged(msg.state, false);
+                                switchStateChanged(msg.state, false, false, syncToServer);
                             }
 
                             if (msg.label != undefined) {
@@ -355,48 +412,71 @@ module.exports = function(RED) {
                             }
                             return (L > 0.27) ?  light : dark;
                         }
-                                
-                        function switchStateChanged(newValue, sendMsg) {
-                            
-                            var divIndex = -1;
+                        
+                        // sendOutputMsg: whether the message must be send (server side) to the output
+                        // userInput: whether the new state was triggered by user input (click/touch)
+                        function switchStateChanged(newValue, sendOutputMsg, userInput, syncToServer) {
+                            var selectedDivIndex = -1;
+
                             // Try to find an option with a value identical to the specified value
                             // For every button be sure that button exists and change mouse cursor and pointer-events
-                            $scope.config.options.forEach(function (option, index) {                                
-                                if($("#mstbtn_"+$scope.config.id+"_"+index).length){
-                                    $("#mstbtn_"+$scope.config.id+"_"+index).css({"cursor":"pointer","pointer-events":"auto"})
-                                    $("#mstbtn_"+$scope.config.id+"_"+index).removeClass("light dark")
-                                }
-                                if (option.value == newValue) {
-                                    // selected button inactive 
+                            $scope.config.options.forEach(function (option, index) {
+                                // Show the unselected buttons as active, when no user input or the user input needs to be visible
+                                if (!userInput || $scope.config.userInput == "visible") {
                                     if($("#mstbtn_"+$scope.config.id+"_"+index).length){
-                                        $("#mstbtn_"+$scope.config.id+"_"+index).css({"cursor":"default","pointer-events":"none"})
-                                        $("#mstbtn_"+$scope.config.id+"_"+index).addClass(txtClassToStandOut(option.color,"light","dark"))
+                                        $("#mstbtn_"+$scope.config.id+"_"+index).css({"cursor":"pointer","pointer-events":"auto"})
+                                        $("#mstbtn_"+$scope.config.id+"_"+index).removeClass("light dark")
                                     }
-                                    divIndex = index;
+                                }
+                                
+                                if (option.value == newValue) {
+                                    // Show the selected buttons as inactive, when no user input or the user input needs to be visible
+                                    if (!userInput || $scope.config.userInput == "visible") {
+                                        // selected button inactive 
+                                        if($("#mstbtn_"+$scope.config.id+"_"+index).length){
+                                            $("#mstbtn_"+$scope.config.id+"_"+index).css({"cursor":"default","pointer-events":"none"})
+                                            $("#mstbtn_"+$scope.config.id+"_"+index).addClass(txtClassToStandOut(option.color,"light","dark"))
+                                        }
+                                    }
+                                    
+                                    selectedDivIndex = index;
                                 }
                             });
 
-                            if (divIndex >= 0) {
-                                var percentage = "0%";
-          
-                                if ($scope.config.options.length > 0 && divIndex >= 0) {
-                                    percentage = (100 / $scope.config.options.length) * divIndex;
-                                    $scope.sliderDivElement.style.left = percentage + "%";
-          
-                                    if ($scope.config.useThemeColors != true) {
-                                        $scope.sliderDivElement.style.backgroundColor = $scope.config.options[divIndex].color;
+                            if (selectedDivIndex >= 0) {
+                                // Move the slider, when no user input or the user input needs to be visible
+                                if (!userInput || $scope.config.userInput == "visible") {
+                                    var percentage = "0%";
+              
+                                    if ($scope.config.options.length > 0 && selectedDivIndex >= 0) {
+                                        percentage = (100 / $scope.config.options.length) * selectedDivIndex;
+                                        $scope.sliderDivElement.style.left = percentage + "%";
+              
+                                        if ($scope.config.useThemeColors != true) {
+                                            $scope.sliderDivElement.style.backgroundColor = $scope.config.options[selectedDivIndex].color;
+                                        }
                                     }
                                 }
                                 
                                 // Make sure that numbers always appear as numbers in the output message (instead of strings)
-                                if ($scope.config.options[divIndex].valueType === "num") {
+                                if ($scope.config.options[selectedDivIndex].valueType === "num") {
                                     newValue = Number(newValue);
                                 }                                
                                 
-                                if (sendMsg) {
-                                    $scope.send({
-                                        state: newValue});
+                                // Most of the time send the state to the server, so the server side state is up-to-date.
+                                // Pass also the sendOutputMsg parameter, so the beforeSend can detect whether the msg should be send as output message.
+                                // Don't resend when nothing changed, otherwise the first replay msg will cause an infinite loop (between client and server)!
+                                if (syncToServer) {
+                                    if (selectedDivIndex != $scope.previousSelectedDivIndex) {
+                                        $scope.send({
+                                            state: newValue,
+                                            sendOutputMsg: sendOutputMsg,
+                                            originId: $scope.config.id
+                                        });
+                                    }
                                 }
+                                
+                                $scope.previousSelectedDivIndex = selectedDivIndex;
                             }
                             else {
                                 console.log("No radio button has value '" + newValue + "'");
