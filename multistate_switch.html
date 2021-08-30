@@ -38,7 +38,10 @@
             rounded: {value: false},
             useThemeColors: {value: true},
             hideSelectedLabel: {value: false},
-            multilineLabel:{value:false},
+            multilineLabel: {value:false},
+            passThrough: {value: 'none'},
+            inputMsg: {value: 'all'},
+            userInput: {value: 'visible'},
             options: {value: [],
                 validate:function(v) {
                     var unique = new Set(v.map(function(o) {return o.value;}));
@@ -79,7 +82,21 @@
             if (this.enableField == undefined) {
                 this.enableField = "enable";
             }
+debugger;
+            // Add an passThrough field value for older nodes (version 1.1.0 or below)
+            if (this.passThrough == undefined) {
+                this.passThrough = "none";
+            }
             
+            // Add an inputMsg field value for older nodes (version 1.1.0 or below)
+            if (this.inputMsg == undefined) {
+                this.inputMsg = "all";
+            }
+            
+            // Add an userInput field value for older nodes (version 1.1.0 or below)
+            if (this.userInput == undefined) {
+                this.userInput = "visible";
+            }          
 
             $('#node-input-rounded').change(function () {
                 if (this.checked == true) {
@@ -253,14 +270,6 @@
         <label for="node-input-label"><i class="fa fa-i-cursor"></i> Label</label>
         <input type="text" id="node-input-label">
     </div>
-    <div class="form-row">
-        <label for="node-input-stateField"><i class="fa fa-toggle-off"></i> State</label>
-        <input type="text" id="node-input-stateField" style="width:70%">
-    </div>
-    <div class="form-row">
-        <label for="node-input-enableField"><i class="fa fa-unlock-alt"></i> Enable</label>
-        <input type="text" id="node-input-enableField" style="width:70%">
-    </div>
     <div class='form-row'>
         <label for='node-input-rounded'><i class='fa fa-gear'></i> Appearance</label>        
         <span id="appearance-square" style="opacity:1; border:1px solid; padding: 3px 20px 2px 5px; "><i class="fa fa-square"></i></span>
@@ -279,6 +288,29 @@
         <input type='checkbox' id='node-input-hideSelectedLabel' style='width:auto ;border:none; vertical-align:baseline;' placeholder='0'>
         <span for='node-input-hideSelectedLabel'> Hide label of selected option</span>
     </div>
+    <div class="form-row">
+        <label for="node-input-passThrough"><i class="fa fa-share"></i> Passthrough</label>
+        <select id="node-input-passThrough">
+            <option value="none">None</option> 
+            <option value="always">Always</option>
+            <option value="change">If state changes</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-inputMsg"><i class="fa fa-sign-in"></i> Input msg</label>
+        <select id="node-input-inputMsg">
+            <option value="none">None</option> 
+            <option value="all">All</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-userInput"><i class="fa fa-hand-o-right"></i> User input</label>
+        <select id="node-input-userInput">
+            <option value="none">None</option> 
+            <option value="visible">Accept and show</option>
+            <option value="invisible">Accept but don't show</option>
+        </select>
+    </div>
     <div class="form-row" style="margin-bottom:0;">
         <label><i class="fa fa-list"></i> Options:</label>
         <span id="configError" style="color:#DD0000"><b>All Values must be unique.</b></span>
@@ -287,15 +319,19 @@
         <!-- Table with input options -->
         <ol id="node-input-options-container"></ol>
     </div>
+    <div class="form-row">
+        <label for="node-input-stateField"><i class="fa fa-toggle-off"></i> State</label>
+        <input type="text" id="node-input-stateField" style="width:70%">
+    </div>
+    <div class="form-row">
+        <label for="node-input-enableField"><i class="fa fa-unlock-alt"></i> Enable</label>
+        <input type="text" id="node-input-enableField" style="width:70%">
+    </div>
 </script>
 <script type="text/html" data-help-name="ui_multistate_switch">
     <p>A Node Red node to show a switch with multiple states in the Node-RED dashboard.</p>
     <p><strong>Label:</strong><br/>
     The label that will be displayed on the left side of the button.</p>
-    <p><strong>State:</strong><br/>
-    The field in the input and output message that will contain the new switch state.</p>
-    <p><strong>Enable:</strong><br/>
-    The field in the input message that will contain a boolean, indicating whether the switch should be enabled or not.  Which means whether it allows user input (click/touch).</p>
     <p><strong>Appearance:</strong><br/>
     Specify whether the shape of the widget should be rectangular or having rounded corners.</p>
     <p><strong>Use theme colors:</strong><br/>
@@ -303,11 +339,40 @@
     <p><strong>Hide label of selected option:</strong><br/>
     Specify whether the label of the selected option should be hidden, i.e. don't need to be displayed on top of the slider.</p>
     <p>Note that this option can dynamically be overridden by input messages with <code>msg.topic="enable"</code> or <code>msg.topic="disable"</code>.</p>
+    <p><strong>Passthrough:</strong><br/>
+    Specify whether input messages should be passed through as output messages:
+        <ul>
+            <li><i>None: </i>The input messages will never be passed through.</li>
+            <li><i>Always: </i>The input messages will always be passed through.</li>
+            <li><i>If state changes: </i>The input messages will only be passed through, when they change the switch state.</li>
+        </ul>
+    </p>
+    <p><strong>Input msg:</strong><br/>
+    Specify whether input messages should be accepted:
+        <ul>
+            <li><i>None: </i>The input messages will never be accepted.</li>
+            <li><i>All: </i>The input messages will always be accepted.</li>
+        </ul>
+    </p>
+    <p><strong>User input:</strong><br/>
+    Specify whether user input (i.e. click and touch events) should be accepted:
+        <ul>
+            <li><i>None: </i>The user input will never be accepted.</li>
+            <li><i>Accept and show: </i>The user input will be accepted, and the new state will be visualized.</li>
+            <li><i>Accept but don't show: </i>The user input will be accepted, but the new state will not be visualized.</li>
+        </ul>
+        </ul>
+    </p>
     <p><strong>Options:</strong><br/>
     Specify which options need to be displayed:
         <ul>
             <li><i>Label: </i>The description that will be displayed.</li>
             <li><i>Value: </i>The value that will be send in input and output messages.</li>
             <li><i>Color: </i>The color of the option in the switch.</li>
-        </ul></p>
+        </ul>
+    </p>
+    <p><strong>State:</strong><br/>
+    The field in the input and output message that will contain the new switch state.</p>
+    <p><strong>Enable:</strong><br/>
+    The field in the input message that will contain a boolean, indicating whether the switch should be enabled or not.  Which means whether it allows user input (click/touch).</p>
 </script>
