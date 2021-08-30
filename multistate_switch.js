@@ -255,8 +255,8 @@ module.exports = function(RED) {
                                         node.send(msg);
                                     }
                                     break;
-                                case "none":
-                                    // No pass through
+                                case "never":
+                                    // Never pass through
                                     break;
                             }
                         }
