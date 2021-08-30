@@ -302,6 +302,7 @@ module.exports = function(RED) {
                             var toggleRadioDiv = $scope.containerDiv.firstElementChild;
                             
                             $scope.previousSelectedDivIndex = -1;
+                            $scope.serverSyncAllowed = false;
 
                             // Create all the required  button elements
                             config.options.forEach(function (option, index) {
@@ -332,7 +333,7 @@ module.exports = function(RED) {
                             if (!msg) {
                                 return;
                             }
-debugger;
+
                             // When input messages need to be ignored, this is (unfortunately) not possible on server side of UI nodes.
                             // Which means to messages will be emitted to the client, and we will reject them here...
                             // See https://discourse.nodered.org/t/validate-input-message-in-ui-node/11393/8?u=bartbutenaers
@@ -359,7 +360,8 @@ debugger;
     
                             if (msg.state != undefined) {
                                 // When a new message arrives that sets a new state, then that state needs to be send to the server (to have the
-                                // latest state on the server).  However when a replayed message arrives, then it has to use to send it the server again.
+                                // latest state on the server).  However when a replayed message arrives, that should NOT be sent to the server again.
+                                // Otherwise the switch will start switching continiously between the states, by different input messages arriving!
                                 var syncToServer = (msg.originId != $scope.config.id);
                                 
                                 // The msg.payload contains the new switch state value
@@ -467,6 +469,14 @@ debugger;
                                 // Pass also the sendOutputMsg parameter, so the beforeSend can detect whether the msg should be send as output message.
                                 // Don't resend when nothing changed, otherwise the first replay msg will cause an infinite loop (between client and server)!
                                 if (syncToServer) {
+                                    // Check and allow server sync after inital state is settled.
+                                    // Otherwise - after a browser window refresh - a replayed message will re-initialize the switch position...
+                                    if($scope.serverSyncAllowed == false){
+                                          $scope.previousSelectedDivIndex = selectedDivIndex;
+                                          $scope.serverSyncAllowed = true
+                                          return
+                                    }
+                                    
                                     if (selectedDivIndex != $scope.previousSelectedDivIndex) {
                                         $scope.send({
                                             state: newValue,
