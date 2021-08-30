@@ -195,6 +195,10 @@ module.exports = function(RED) {
                 // Add default values to older nodes (version 1.0.0)
                 config.stateField = config.stateField || 'payload';
                 config.enableField = config.enableField || 'enable';
+                
+                // Add default values to older nodes (version 1.1.0)
+                config.passthroughField = config.passthroughField || 'passthrough';
+                config.inputMsgField = config.inputMsgField || 'inputmsg';
             
                 var html = HTML(config);
                 var done = ui.addWidget({
@@ -231,7 +235,55 @@ module.exports = function(RED) {
                             
                             try {
                                 // Get the new enable value from the specified message field
-                                newMsg.enable = RED.util.getMessageProperty(msg, config.enableField);
+                                var enable = RED.util.getMessageProperty(msg, config.enableField);
+                                
+                                if (enable != undefined) {
+                                    if (enable === true || enable === false || enable === "enabled_show" || enable === "enabled_not_show" || enable === "disabled") {
+                                        // This setting will only be used at the client side
+                                        newMsg.enable = enable;
+                                    }
+                                    else {
+                                        node.error("The 'enable' message field value should contain true, false, 'enabled_show', 'enabled_not_show' or 'disabled'");
+                                    }
+                                } 
+                            } 
+                            catch(err) {
+                                // No problem because the enable value is optional ...
+                            }
+                            
+                            try {
+                                // Get the new passthrough value from the specified message field.
+                                var passthrough = RED.util.getMessageProperty(msg, config.passthroughField);
+                                
+                                if (passthrough != undefined) {
+                                    if (passthrough === "never" || passthrough === "always" || passthrough === "change") {
+                                        // The passthrough will be executed only on the server side, so store the value in the config.
+                                        config.passthrough = RED.util.getMessageProperty(msg, config.passthroughField);
+                                    }
+                                    else {
+                                        node.error("The 'passthrough' message field value should contain 'never', 'always' or 'change'");
+                                    }
+                                }
+                            } 
+                            catch(err) {
+                                // No problem because the enable value is optional ...
+                            }
+                            
+                            try {
+                                // Get the new input msg value from the specified message field.
+                                var inputMsg = RED.util.getMessageProperty(msg, config.inputMsgField);
+                                
+                                if (inputMsg != undefined) {
+                                    if (inputMsg === "none" || inputMsg === "all") {
+                                        // The input msg filtering will be executed only on the server side, so store the value in the config.
+                                        config.inputMsg = inputMsg;
+                                        // But the same config will also be used on the client side!
+                                        newMsg.inputMsg = inputMsg;
+                                    }
+                                    else {
+                                        node.error("The 'input msg' message field value should contain 'none' or 'all'");
+                                    }
+                                }
                             } 
                             catch(err) {
                                 // No problem because the enable value is optional ...
@@ -245,7 +297,7 @@ module.exports = function(RED) {
                         // Note that there can't be pass through when input messages are rejected (inputMsg is 'none').
                         // So we need to take into account here that those messages will get rejected on the client side watch!
                         if (config.inputMsg != "none") {
-                            switch (config.passThrough) {
+                            switch (config.passthrough) {
                                 case "always":
                                     node.send(msg);
                                     break;
@@ -333,6 +385,12 @@ module.exports = function(RED) {
                             if (!msg) {
                                 return;
                             }
+                            
+                            // Accept or not input messages.
+                            // Note that this needs to be called before the input message is rejected (in the next check), otherwise we can never reactivate input messages again ...
+                            if (msg.inputMsg) {
+                                $scope.config.inputMsg = msg.inputMsg;
+                            }
 
                             // When input messages need to be ignored, this is (unfortunately) not possible on server side of UI nodes.
                             // Which means to messages will be emitted to the client, and we will reject them here...
@@ -352,10 +410,20 @@ module.exports = function(RED) {
                                 }
                             }
 
-                            //temporary added here to test the disable/enable functionality                            
-                            if(msg.enable === true || msg.enable === false){
-                                disable(!msg.enable);
-                                return;
+                            // Enable or disable the user input via input messages.
+                            // Note that in old nodes (version 1.1.0 and below) a boolean would be injected, so we need to migrate those boolean values.
+                            // The "enabled_not_show" is a new extra mode, so there is no boolean counterpart for that mode...
+                            if (msg.enable === true || msg.enable === "enabled_show") {
+                                $scope.config.userInput = "enabled_show";
+                                disable(false);
+                            }
+                            else if (msg.enable === false || msg.enable === "disabled") {
+                                $scope.config.userInput = "disabled";
+                                disable(true);
+                            }
+                            else if (msg.enable === "enabled_not_show") {
+                                $scope.config.userInput = "enabled_not_show";
+                                disable(false);
                             }
     
                             if (msg.state != undefined) {
