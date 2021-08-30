@@ -323,7 +323,7 @@ module.exports = function(RED) {
                             });
                             
                             // Disable the switch, when no user input is allowed
-                            if (config.userInput == "none") {
+                            if (config.userInput == "disabled") {
                                 disable(true);
                             }
                         }
@@ -345,8 +345,8 @@ module.exports = function(RED) {
                             // Immediately afterwards that message will be replayed and arrive here.  However when we don't visualize
                             // the new state, then the replayed message would cause the new state to be visualized anyway.  Therefore
                             // replayed messages from the same session will be ignored.
-                            // Caution: only apply this for type 'invisible', otherwise there is no sync anymore (between dashboards or after refresh).
-                            if ($scope.config.userInput == "invisible") {
+                            // Caution: only apply this for type 'enabled_not_show', otherwise there is no sync anymore (between dashboards or after refresh).
+                            if ($scope.config.userInput == "enabled_not_show") {
                                 if (msg.originId == $scope.config.id) {
                                     return;
                                 }
@@ -423,8 +423,8 @@ module.exports = function(RED) {
                             // Try to find an option with a value identical to the specified value
                             // For every button be sure that button exists and change mouse cursor and pointer-events
                             $scope.config.options.forEach(function (option, index) {
-                                // Show the unselected buttons as active, when no user input or the user input needs to be visible
-                                if (!userInput || $scope.config.userInput == "visible") {
+                                // Show the unselected buttons as active, when no user input or the user input needs to be visualized
+                                if (!userInput || $scope.config.userInput == "enabled_show") {
                                     if($("#mstbtn_"+$scope.config.id+"_"+index).length){
                                         $("#mstbtn_"+$scope.config.id+"_"+index).css({"cursor":"pointer","pointer-events":"auto"})
                                         $("#mstbtn_"+$scope.config.id+"_"+index).removeClass("light dark")
@@ -432,8 +432,8 @@ module.exports = function(RED) {
                                 }
                                 
                                 if (option.value == newValue) {
-                                    // Show the selected buttons as inactive, when no user input or the user input needs to be visible
-                                    if (!userInput || $scope.config.userInput == "visible") {
+                                    // Show the selected buttons as inactive, when no user input or the user input needs to be visalized
+                                    if (!userInput || $scope.config.userInput == "enabled_show") {
                                         // selected button inactive 
                                         if($("#mstbtn_"+$scope.config.id+"_"+index).length){
                                             $("#mstbtn_"+$scope.config.id+"_"+index).css({"cursor":"default","pointer-events":"none"})
@@ -446,8 +446,8 @@ module.exports = function(RED) {
                             });
 
                             if (selectedDivIndex >= 0) {
-                                // Move the slider, when no user input or the user input needs to be visible
-                                if (!userInput || $scope.config.userInput == "visible") {
+                                // Move the slider, when no user input or the user input needs to be visualized
+                                if (!userInput || $scope.config.userInput == "enabled_show") {
                                     var percentage = "0%";
               
                                     if ($scope.config.options.length > 0 && selectedDivIndex >= 0) {

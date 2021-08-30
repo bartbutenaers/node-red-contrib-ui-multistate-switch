@@ -39,9 +39,9 @@
             useThemeColors: {value: true},
             hideSelectedLabel: {value: false},
             multilineLabel: {value:false},
-            passThrough: {value: 'none'},
+            passThrough: {value: 'never'},
             inputMsg: {value: 'all'},
-            userInput: {value: 'visible'},
+            userInput: {value: 'enabled_show'},
             options: {value: [],
                 validate:function(v) {
                     var unique = new Set(v.map(function(o) {return o.value;}));
@@ -82,10 +82,10 @@
             if (this.enableField == undefined) {
                 this.enableField = "enable";
             }
-debugger;
+
             // Add an passThrough field value for older nodes (version 1.1.0 or below)
             if (this.passThrough == undefined) {
-                this.passThrough = "none";
+                this.passThrough = "never";
             }
             
             // Add an inputMsg field value for older nodes (version 1.1.0 or below)
@@ -95,7 +95,7 @@ debugger;
             
             // Add an userInput field value for older nodes (version 1.1.0 or below)
             if (this.userInput == undefined) {
-                this.userInput = "visible";
+                this.userInput = "enabled_show";
             }          
 
             $('#node-input-rounded').change(function () {
@@ -306,9 +306,9 @@ debugger;
     <div class="form-row">
         <label for="node-input-userInput"><i class="fa fa-hand-o-right"></i> User input</label>
         <select id="node-input-userInput" style="width:70%;">
-            <option value="none">None</option> 
-            <option value="visible">Accept and show</option>
-            <option value="invisible">Accept but don't show</option>
+            <option value="disabled">Disabled</option> 
+            <option value="enabled_show">Enabled and show</option>
+            <option value="enabled_not_show">Enabled but don't show</option>
         </select>
     </div>
     <div class="form-row" style="margin-bottom:0;">
@@ -342,7 +342,7 @@ debugger;
     <p><strong>Passthrough:</strong><br/>
     Specify whether input messages should be passed through as output messages:
         <ul>
-            <li><i>None: </i>The input messages will never be passed through.</li>
+            <li><i>Never: </i>The input messages will never be passed through.</li>
             <li><i>Always: </i>The input messages will always be passed through.</li>
             <li><i>If state changes: </i>The input messages will only be passed through, when they change the switch state.</li>
         </ul>
@@ -357,9 +357,9 @@ debugger;
     <p><strong>User input:</strong><br/>
     Specify whether user input (i.e. click and touch events) should be accepted:
         <ul>
-            <li><i>None: </i>The user input will never be accepted.</li>
-            <li><i>Accept and show: </i>The user input will be accepted, and the new state will be visualized.</li>
-            <li><i>Accept but don't show: </i>The user input will be accepted, but the new state will not be visualized.</li>
+            <li><i>Disabled: </i>The user input will never be accepted.</li>
+            <li><i>Enabled and show: </i>The user input will be accepted, and the new state will be visualized.</li>
+            <li><i>Enabled but don't show: </i>The user input will be accepted, but the new state will not be visualized.</li>
         </ul>
         </ul>
     </p>
