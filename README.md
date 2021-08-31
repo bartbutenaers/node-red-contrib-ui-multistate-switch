@@ -66,7 +66,11 @@ Specify whether input messages should be accepted:
 Specify whether user input (i.e. click and touch events) should be accepted:
 + *Disabled*: The user input will never be accepted.
 + *Enabled and show*: The user input will be accepted, and the new state will be visualized (i.e. the switch will switch to the new state).
-+ *Enabled but don't show*: The user input will be accepted, but the new state will not be visualized.  This could be used if the switch needs to show the real state.  As soon as the real state changes, it will be injected into the switch node which will visually switch to the new state.
++ *Enabled but don't show*: The user input will be accepted, but the new state will not be visualized.  This could be used if the switch needs to show the real state.  As soon as the real state changes, it will be injected into the switch node which will visually switch to the new state.  A ***"ripple" effect*** has been introduced to visualize that another state has been clicked:
+
+   ![multistate_ripple](https://user-images.githubusercontent.com/14224149/131454161-bf63a237-cd62-4bd0-bf2d-9b7f197fb7f1.gif)
+   
+   Note that only the first time that another state has been clicked, an output message will be sent!
 
 Note that the look and feel of the switch will also change when enabled or not:
 
