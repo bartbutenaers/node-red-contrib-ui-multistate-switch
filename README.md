@@ -34,8 +34,19 @@ This node allows to show a multi-state switch in a few steps:
 The label is the text which is displayed in front of the switch.
 Note that the label can contain Mustache syntax, in case the label needs to be changed dynamically via input messages.  See [this](https://github.com/bartbutenaers/node-red-contrib-ui-multistate-switch/wiki/Dynamic-label-via-Mustache-expressions) wiki page for more information.
 
+Extra options:
++ Via the *"Appearance"* option (see below), ***multi-line labels*** can be activated:
+
+   ![Multi-line label](https://user-images.githubusercontent.com/14224149/131564936-2b2de7fa-6292-433a-936f-48d0ebb70f98.png)
+
++ When dealing with a long multi-line label, it might be useful to increase the ***height*** of this widget:
+
+   ![Height increased](https://user-images.githubusercontent.com/14224149/131565108-b86b3ec3-f2d3-4c97-9bc4-256f3928def9.png)
+
++ It is also possible to show an ***icon*** inside the label.  See [this](https://github.com/bartbutenaers/node-red-contrib-ui-multistate-switch/wiki/Displaying-icons-in-the-switch) wiki page for more information.
+
 ### Appearance
-The appearance determines the shape of the switch button, which allows you to have rounded corners:
+The appearance determines the shape of the switch button, which allows you to have ***rounded corners***:
 
 ![Appearance](https://user-images.githubusercontent.com/14224149/108561643-e4c04e80-72fe-11eb-88c3-3ea4af5256e6.png)
 
@@ -78,6 +89,11 @@ Specify whether user input (i.e. click and touch events) should be accepted:
 Note that the look and feel of the switch will also change when enabled or not:
 
 ![Disabled switch](https://user-images.githubusercontent.com/14224149/109077361-4b2cde80-76fc-11eb-828c-6fcb32caba6d.png)
+
+### Options
+Specify the options (label and value) that needs to be displayed inside the switch.
+
+Note that a label can contain an ***icon***.  See [this](https://github.com/bartbutenaers/node-red-contrib-ui-multistate-switch/wiki/Displaying-icons-in-the-switch) wiki page for more information.
 
 ### State field
 Specify which field in the input and output message will contain the new switch state.  By default `msg.payload` will be used.
