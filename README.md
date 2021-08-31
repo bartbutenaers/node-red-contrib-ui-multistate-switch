@@ -29,7 +29,10 @@ This node allows to show a multi-state switch in a few steps:
  3. It is also possible to inject an input message, with the new value in the `msg.payload`.  The corresponding option will automatically be selected in the dashboard.
 
 ## Node properties
-It is very easy to adjust the styling of this switch widget in two ways:
+
+### Label
+The label is the text which is displayed in front of the switch.
+Note that the label can contain Mustache syntax, in case the label needs to be changed dynamically via input messages.  See [this](https://github.com/bartbutenaers/node-red-contrib-ui-multistate-switch/wiki/Dynamic-label-via-Mustache-expressions) wiki page for more information.
 
 ### Appearance
 The appearance determines the shape of the switch button, which allows you to have rounded corners:
