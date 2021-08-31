@@ -35,13 +35,15 @@
             label: {value: 'switch'},
             stateField: {value: 'payload'},
             enableField: {value: 'enable'},
+            passthroughField: {value: 'passthrough'},
+            inputMsgField: {value: 'passthrough'},
             rounded: {value: false},
             useThemeColors: {value: true},
             hideSelectedLabel: {value: false},
             multilineLabel: {value:false},
-            passThrough: {value: 'none'},
+            passThrough: {value: 'never'},
             inputMsg: {value: 'all'},
-            userInput: {value: 'visible'},
+            userInput: {value: 'enabled_show'},
             options: {value: [],
                 validate:function(v) {
                     var unique = new Set(v.map(function(o) {return o.value;}));
@@ -82,10 +84,20 @@
             if (this.enableField == undefined) {
                 this.enableField = "enable";
             }
-debugger;
+            
+            // Add a passthrough field value for older nodes (version 1.1.0)
+            if (this.passthroughField == undefined) {
+                this.passthroughField = "passthrough";
+            }
+            
+            // Add an input msg field value for older nodes (version 1.1.0)
+            if (this.inputMsgField == undefined) {
+                this.inputMsgField = "inputmsg";
+            }
+
             // Add an passThrough field value for older nodes (version 1.1.0 or below)
             if (this.passThrough == undefined) {
-                this.passThrough = "none";
+                this.passThrough = "never";
             }
             
             // Add an inputMsg field value for older nodes (version 1.1.0 or below)
@@ -95,7 +107,7 @@ debugger;
             
             // Add an userInput field value for older nodes (version 1.1.0 or below)
             if (this.userInput == undefined) {
-                this.userInput = "visible";
+                this.userInput = "enabled_show";
             }          
 
             $('#node-input-rounded').change(function () {
@@ -188,6 +200,18 @@ debugger;
 
             $("#node-input-enableField").val(this.enableField);
             $('#node-input-enableField').typedInput({
+                types: ['msg'],
+                default: 'msg'
+            });
+            
+            $("#node-input-passthroughField").val(this.passthroughField);
+            $('#node-input-passthroughField').typedInput({
+                types: ['msg'],
+                default: 'msg'
+            });
+            
+            $("#node-input-inputMsgField").val(this.inputMsgField);
+            $('#node-input-inputMsgField').typedInput({
                 types: ['msg'],
                 default: 'msg'
             });
@@ -291,7 +315,7 @@ debugger;
     <div class="form-row">
         <label for="node-input-passThrough"><i class="fa fa-share"></i> Passthrough</label>
         <select id="node-input-passThrough" style="width:70%;">
-            <option value="none">None</option> 
+            <option value="never">Never</option> 
             <option value="always">Always</option>
             <option value="change">If state changes</option>
         </select>
@@ -306,9 +330,9 @@ debugger;
     <div class="form-row">
         <label for="node-input-userInput"><i class="fa fa-hand-o-right"></i> User input</label>
         <select id="node-input-userInput" style="width:70%;">
-            <option value="none">None</option> 
-            <option value="visible">Accept and show</option>
-            <option value="invisible">Accept but don't show</option>
+            <option value="disabled">Disabled</option> 
+            <option value="enabled_show">Enabled and show</option>
+            <option value="enabled_not_show">Enabled but don't show</option>
         </select>
     </div>
     <div class="form-row" style="margin-bottom:0;">
@@ -320,12 +344,20 @@ debugger;
         <ol id="node-input-options-container"></ol>
     </div>
     <div class="form-row">
-        <label for="node-input-stateField"><i class="fa fa-toggle-off"></i> State</label>
+        <label for="node-input-stateField"><i class="fa fa-list-alt"></i> State field</label>
         <input type="text" id="node-input-stateField" style="width:70%">
     </div>
     <div class="form-row">
-        <label for="node-input-enableField"><i class="fa fa-unlock-alt"></i> Enable</label>
+        <label for="node-input-enableField"><i class="fa fa-list-alt"></i> User input field</label>
         <input type="text" id="node-input-enableField" style="width:70%">
+    </div>
+    <div class="form-row">
+        <label for="node-input-passthroughField"><i class="fa fa-list-alt"></i> Passthrough field</label>
+        <input type="text" id="node-input-passthroughField" style="width:70%">
+    </div>
+    <div class="form-row">
+        <label for="node-input-inputMsgField"><i class="fa fa-list-alt"></i> Input msg field</label>
+        <input type="text" id="node-input-inputMsgField" style="width:70%">
     </div>
 </script>
 <script type="text/html" data-help-name="ui_multistate_switch">
@@ -342,7 +374,7 @@ debugger;
     <p><strong>Passthrough:</strong><br/>
     Specify whether input messages should be passed through as output messages:
         <ul>
-            <li><i>None: </i>The input messages will never be passed through.</li>
+            <li><i>Never: </i>The input messages will never be passed through.</li>
             <li><i>Always: </i>The input messages will always be passed through.</li>
             <li><i>If state changes: </i>The input messages will only be passed through, when they change the switch state.</li>
         </ul>
@@ -357,9 +389,9 @@ debugger;
     <p><strong>User input:</strong><br/>
     Specify whether user input (i.e. click and touch events) should be accepted:
         <ul>
-            <li><i>None: </i>The user input will never be accepted.</li>
-            <li><i>Accept and show: </i>The user input will be accepted, and the new state will be visualized.</li>
-            <li><i>Accept but don't show: </i>The user input will be accepted, but the new state will not be visualized.</li>
+            <li><i>Disabled: </i>The user input will never be accepted.</li>
+            <li><i>Enabled and show: </i>The user input will be accepted, and the new state will be visualized.</li>
+            <li><i>Enabled but don't show: </i>The user input will be accepted, but the new state will not be visualized.</li>
         </ul>
         </ul>
     </p>
@@ -371,8 +403,29 @@ debugger;
             <li><i>Color: </i>The color of the option in the switch.</li>
         </ul>
     </p>
-    <p><strong>State:</strong><br/>
+    <p><strong>State field:</strong><br/>
     The field in the input and output message that will contain the new switch state.</p>
-    <p><strong>Enable:</strong><br/>
-    The field in the input message that will contain a boolean, indicating whether the switch should be enabled or not.  Which means whether it allows user input (click/touch).</p>
+    <p><strong>User input field:</strong><br/>
+    The field in the input message that will contain a value, indicating whether the switch should be enabled or not.  Which means whether it allows user input (click/touch).  The value can be:
+        <ul>
+            <li><i>"enabled_show" (or true): </i>see user input modus "Enabled and show".</li>
+            <li><i>"enabled_not_show": </i>see user input modus "Enabled but don't show".</li>
+            <li><i>"disabled" (or false): </i>see user input modus "Disabled".</li>              
+        </ul>    
+    </p>
+    <p><strong>Passthrough field:</strong><br/>
+    The field in the input message that will contain a value, indicating whether the input messages should be passed through or not.  The value can be:
+        <ul>
+            <li><i>"never": </i>see passthrough modus "Never".</li>
+            <li><i>"always": </i>see passthrough modus "Allways".</li>
+            <li><i>"change": </i>see passthrough modus "If state changes".</li>                    
+        </ul>    
+    </p>
+    <p><strong>Input msg field:</strong><br/>
+    The field in the input message that will contain a value, indicating whether the input messages should be accepted or not.  The value can be:
+        <ul>
+            <li><i>"none": </i>see input msg modus "None".</li>
+            <li><i>"all": </i>see input msg modus "All".</li>                
+        </ul>    
+    </p>
 </script>
