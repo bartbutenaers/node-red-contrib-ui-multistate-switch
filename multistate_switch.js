@@ -499,7 +499,8 @@ module.exports = function(RED) {
                                     }
                                 }
                                 
-                                if (option.value == newValue) {
+                                // Trick: add an empty character to convert booleans to strings, which is required because e.g. "true"==true would return false
+                                if (option.value == newValue+'') {
                                     // Show the selected buttons as inactive, when no user input or the user input needs to be visalized
                                     if (!userInput || $scope.config.userInput == "enabled_show") {
                                         // selected button inactive 
@@ -528,9 +529,14 @@ module.exports = function(RED) {
                                     }
                                 }
                                 
-                                // Make sure that numbers always appear as numbers in the output message (instead of strings)
-                                if ($scope.config.options[selectedDivIndex].valueType === "num") {
-                                    newValue = Number(newValue);
+                                // Make sure that numbers always appear as the correct type in the output message (instead of strings)
+                                switch ($scope.config.options[selectedDivIndex].valueType) {
+                                    case "num":
+                                        newValue = Number(newValue);
+                                        break;
+                                    case "bool":
+                                        newValue = (newValue === 'true');
+                                        break;
                                 }                                
                                 
                                 // Most of the time send the state to the server, so the server side state is up-to-date.
