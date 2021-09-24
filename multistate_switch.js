@@ -258,7 +258,7 @@ module.exports = function(RED) {
                                 if (passthrough != undefined) {
                                     if (passthrough === "never" || passthrough === "always" || passthrough === "change") {
                                         // The passthrough will be executed only on the server side, so store the value in the config.
-                                        config.passthrough = RED.util.getMessageProperty(msg, config.passthroughField);
+                                        config.passThrough = RED.util.getMessageProperty(msg, config.passthroughField);
                                     }
                                     else {
                                         node.error("The 'passthrough' message field value should contain 'never', 'always' or 'change'");
@@ -297,7 +297,7 @@ module.exports = function(RED) {
                         // Note that there can't be pass through when input messages are rejected (inputMsg is 'none').
                         // So we need to take into account here that those messages will get rejected on the client side watch!
                         if (config.inputMsg != "none") {
-                            switch (config.passthrough) {
+                            switch (config.passThrough) {
                                 case "always":
                                     node.send(msg);
                                     break;
