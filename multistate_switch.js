@@ -199,6 +199,8 @@ module.exports = function(RED) {
                 // Add default values to older nodes (version 1.1.0)
                 config.passthroughField = config.passthroughField || 'passthrough';
                 config.inputMsgField = config.inputMsgField || 'inputmsg';
+                
+                config.enabled = true;
             
                 var html = HTML(config);
                 var done = ui.addWidget({
@@ -239,7 +241,7 @@ module.exports = function(RED) {
                                 
                                 if (enable != undefined) {
                                     if (enable === true || enable === false || enable === "enabled_show" || enable === "enabled_not_show" || enable === "disabled") {
-                                        // This setting will only be used at the client side
+                                        config.enabled = enable; // Remember the current value (only required for the next msg, because it won't be used on the server side)
                                         newMsg.enable = enable;
                                     }
                                     else {
@@ -257,7 +259,7 @@ module.exports = function(RED) {
                                 
                                 if (passthrough != undefined) {
                                     if (passthrough === "never" || passthrough === "always" || passthrough === "change") {
-                                        // The passthrough will be executed only on the server side, so store the value in the config.
+                                        // The passthrough will be executed only on the server side, so store the value in the config (but no need to put it in newMsg)
                                         config.passThrough = RED.util.getMessageProperty(msg, config.passthroughField);
                                     }
                                     else {
@@ -313,6 +315,24 @@ module.exports = function(RED) {
                             }
                         }
 
+                        // When the message doesn't contain a state, then inject the current state into it (if available).
+                        // That way replayed input messages will always contain the latest state.
+                        if (!newMsg.state && this.currentSwitchState) {
+                            newMsg.state = this.currentSwitchState;
+                        }
+                        
+                        // When the message doesn't contain whether the switch is enabled, then inject into it whether it is enabled (if available).
+                        // That way replayed input messages will always contain whether the switch should be enabled.
+                        if (newMsg.enable == undefined) {
+                            newMsg.enable = config.enabled;
+                        }   
+                            
+                        // When the message doesn't contain whether the node accepts input messages, then inject into it whether the node accepts input messages.
+                        // That way replayed input messages will always contain whether the switch should accept input messages.
+                        if(!newMsg.inputMsg) {
+                            newMsg.inputMsg = config.inputMsg;
+                        }
+                    
                         return { msg: newMsg };
                     },
                     beforeSend: function (msg, orig) {
@@ -385,7 +405,7 @@ module.exports = function(RED) {
                             if (!msg) {
                                 return;
                             }
-                            
+
                             // Accept or not input messages.
                             // Note that this needs to be called before the input message is rejected (in the next check), otherwise we can never reactivate input messages again ...
                             if (msg.inputMsg) {
@@ -555,7 +575,13 @@ module.exports = function(RED) {
                                         $scope.send({
                                             state: newValue,
                                             sendOutputMsg: sendOutputMsg,
-                                            originId: $scope.config.id
+                                            originId: $scope.config.id,
+                                            // Make sure that the replayed output messages contain all the information to restore the switch into the correct state.
+                                            // Similar to what the onBeforeEmit function does for (replayed) 'input' messages...
+                                            // Note that we will need to do this on the client side, because it is this message that is replayed (not the output
+                                            // message that has been manipulated inside the onBeforeSend...
+                                            enable: $scope.config.userInput,
+                                            inputMsg: $scope.config.inputMsg                                        
                                         });
                                     }
                                 }
