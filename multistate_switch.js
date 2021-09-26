@@ -317,7 +317,7 @@ module.exports = function(RED) {
 
                         // When the message doesn't contain a state, then inject the current state into it (if available).
                         // That way replayed input messages will always contain the latest state.
-                        if (!newMsg.state && this.currentSwitchState) {
+                        if (newMsg.state == undefined && this.currentSwitchState != undefined) {
                             newMsg.state = this.currentSwitchState;
                         }
                         
@@ -329,7 +329,7 @@ module.exports = function(RED) {
                             
                         // When the message doesn't contain whether the node accepts input messages, then inject into it whether the node accepts input messages.
                         // That way replayed input messages will always contain whether the switch should accept input messages.
-                        if(!newMsg.inputMsg) {
+                        if(newMsg.inputMsg == undefined) {
                             newMsg.inputMsg = config.inputMsg;
                         }
                     
