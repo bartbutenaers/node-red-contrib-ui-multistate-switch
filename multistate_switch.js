@@ -181,17 +181,21 @@ module.exports = function(RED) {
             if(ui === undefined) {
                 ui = RED.require("node-red-dashboard")(RED);
             }
-            config.dark = false
-            if(typeof ui.isDark === "function"){
-                config.dark = ui.isDark()
-            }
-            config.ripple = {
-                color:config.dark ? "#FFF" : "#000",
-                round:config.rounded ? 1 : 0
-            }
+           
             RED.nodes.createNode(this, config);       
 
             if (checkConfig(node, config)) { 
+
+                config.dark = false
+                if(typeof ui.isDark === "function"){
+                    config.dark = ui.isDark()
+                    config.themeColor = ui.getTheme()["widget-backgroundColor"].value
+                }
+                config.ripple = {
+                    color:config.dark ? "#FFF" : "#000",
+                    round:config.rounded ? 1 : 0
+                }
+
                 // Add default values to older nodes (version 1.0.0)
                 config.stateField = config.stateField || 'payload';
                 config.enableField = config.enableField || 'enable';
@@ -507,6 +511,7 @@ module.exports = function(RED) {
                         // userInput: whether the new state was triggered by user input (click/touch)
                         function switchStateChanged(newValue, sendOutputMsg, userInput, syncToServer) {
                             var selectedDivIndex = -1;
+                            var col
 
                             // Try to find an option with a value identical to the specified value
                             // For every button be sure that button exists and change mouse cursor and pointer-events
@@ -526,7 +531,8 @@ module.exports = function(RED) {
                                         // selected button inactive 
                                         if($("#mstbtn_"+$scope.config.id+"_"+index).length){
                                             $("#mstbtn_"+$scope.config.id+"_"+index).css({"cursor":"default","pointer-events":"none"})
-                                            $("#mstbtn_"+$scope.config.id+"_"+index).addClass(txtClassToStandOut(option.color,"light","dark"))
+                                            col = $scope.config.useThemeColors ? $scope.config.themeColor : option.color
+                                            $("#mstbtn_"+$scope.config.id+"_"+index).addClass(txtClassToStandOut(col,"light","dark"))
                                         }
                                     }
                                     
