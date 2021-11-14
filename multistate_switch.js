@@ -561,7 +561,7 @@ module.exports = function(RED) {
                                         newValue = Number(newValue);
                                         break;
                                     case "bool":
-                                        newValue = (newValue === 'true');
+                                        newValue = (newValue === 'true' || newValue === true);
                                         break;
                                 }                                
                                 
