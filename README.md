@@ -123,7 +123,7 @@ Specify which field in the input message will contain a value, indicating whethe
 
 See example flow in [this](https://github.com/bartbutenaers/node-red-contrib-ui-multistate-switch/wiki/Configuring-the-switch-via-input-messages) wiki page.
 
-### Input msg field
+### Topic
 Specify the text that needs to be send in the `msg.topic` field of the output message.  If no value is entered, the original topic will remain unchanged (if available in the input message already).
 
 ## Example flow
