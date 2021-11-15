@@ -49,8 +49,8 @@
                     var unique = new Set(v.map(function(o) {return o.value;}));
                     return v.length == unique.size && v.length > 1;
                 }
-            }
-            
+            },
+            topic: {value: ""}
         },
         inputs:1,
         outputs:1,
@@ -359,6 +359,10 @@
         <label for="node-input-inputMsgField"><i class="fa fa-list-alt"></i> Input msg field</label>
         <input type="text" id="node-input-inputMsgField" style="width:70%">
     </div>
+    <div class="form-row">
+        <label for="node-input-topic"><i class="fa fa-server"></i> Topic</label>
+        <input id="node-input-topic" type="text" style="width: 70%">
+    </div>
 </script>
 <script type="text/html" data-help-name="ui_multistate_switch">
     <p>A Node Red node to show a switch with multiple states in the Node-RED dashboard.</p>
@@ -428,4 +432,6 @@
             <li><i>"all": </i>see input msg modus "All".</li>                
         </ul>    
     </p>
+    <p><strong>Topic:</strong><br/>
+    The text that needs to be send in the <code>msg.topic</code> field.</p>
 </script>

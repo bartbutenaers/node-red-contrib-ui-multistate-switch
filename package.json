@@ -1,6 +1,6 @@
 {
     "name": "node-red-contrib-ui-multistate-switch",
-    "version": "1.2.1",
+    "version": "1.2.2",
     "description": "A Node Red node to show a switch with multiple states in the Node-RED dashboard",
     "author": {
         "name": "Bart Butenaers"

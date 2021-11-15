@@ -343,8 +343,13 @@ module.exports = function(RED) {
                         if (orig) {
                             var newMsg = {};
                             // Store the switch state in the specified msg state field
-                            RED.util.setMessageProperty(newMsg, config.stateField, orig.msg.state, true)
+                            RED.util.setMessageProperty(newMsg, config.stateField, orig.msg.state, true);
                             //orig.msg = newMsg;
+                            
+                            if (config.topic) {
+                                // Apply the topic string, when it has been specified
+                                newMsg.topic = config.topic;
+                            }
                             
                             this.currentSwitchState = orig.msg.state;
                             
