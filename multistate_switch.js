@@ -336,7 +336,17 @@ module.exports = function(RED) {
                         if(newMsg.inputMsg == undefined) {
                             newMsg.inputMsg = config.inputMsg;
                         }
-                    
+          
+                        // Get the label corresponding to the specified new value
+                        var newOption = config.options.filter(function(option) {
+                            return option.value == newMsg.state+'';
+                        })
+                        
+                        if (newOption.length > 0) {
+                            // When the label of the input value exists, show it in the node status
+                            node.status({fill:"blue", shape:"dot", text:newOption[0].label});
+                        }
+                
                         return { msg: newMsg };
                     },
                     beforeSend: function (msg, orig) {
@@ -350,9 +360,21 @@ module.exports = function(RED) {
                                 // Apply the topic string, when it has been specified
                                 newMsg.topic = config.topic;
                             }
-                            
-                            this.currentSwitchState = orig.msg.state;
-                            
+
+                            if (node.currentSwitchState != orig.msg.state) {
+                                node.currentSwitchState = orig.msg.state;
+
+                                // Get the label corresponding to the specified new value
+                                var currentOption = config.options.filter(function(option) {
+                                    return option.value == node.currentSwitchState+'';
+                                })
+                                
+                                if (currentOption.length > 0) {
+                                    // When the label of the selected value exists, show it in the node status
+                                    node.status({fill:"blue", shape:"dot", text:currentOption[0].label});
+                                }
+                            }
+
                             // Don't send the message to the output, if that is specified in the original message
                             // See https://discourse.nodered.org/t/getting-errors-to-the-server-side-in-ui-node/24999/5?u=bartbutenaers
                             if (!orig.msg.sendOutputMsg) {
