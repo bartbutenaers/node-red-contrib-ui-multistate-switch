@@ -111,6 +111,8 @@ The content of this message field can be:
 
 See example flow in [this](https://github.com/bartbutenaers/node-red-contrib-ui-multistate-switch/wiki/Configuring-the-switch-via-input-messages) wiki page.
 
+Caution: don't use the standard [dashboard](https://github.com/node-red/node-red-dashboard `msg.enabled` field, because then the dashboard will look disabled but it can still be clicked.  Thanks to @hugobox for the tip.
+
 ### Passthrough field
 Specify which field in the input message will contain a value, indicating whether the input messages should be passed through (to the output) or not.  The value can be:
 + `"never"`: see passthrough modus *"Never"* for more information.
