@@ -1,3 +1,8 @@
+> [!CAUTION]
+> **This third-party ui node was developed for the Node-RED AngularJs [dashboard](https://flows.nodered.org/node/node-red-dashboard), which is end of life.
+> For the new VueJs Node-RED dashboard 2.0, use the core ui [Button Group](https://dashboard.flowfuse.com/nodes/widgets/ui-button-group.html) widget instead!!!**
+
+
 # node-red-contrib-ui-multistate-switch
 A Node Red node to show a switch with multiple states in the Node-RED dashboard.
 
